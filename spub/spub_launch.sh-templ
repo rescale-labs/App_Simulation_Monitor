@@ -1,0 +1,46 @@
+#!/bin/bash
+
+
+# Check if jupyter4all is enabled
+CERT=$HOME/.certs/nb.pem
+CKEY=$HOME/.certs/nb.key
+
+if [ ! -f "$CERT" ] || [ ! -f "$CKEY" ]; then
+    echo "!"
+    echo "#####################################################"
+    echo "# ERROR: Rescale App failed to start.               #"
+    echo "#        Make sure the jupyter4all flag is enabled. #"
+    echo "#####################################################"
+    echo "!"
+
+    return 1
+fi
+
+. ~/jupyter-venv/bin/activate
+RESCALE_PYTHON_TOKEN=$(jupyter notebook list | grep token | sed --regexp-extended 's/.*token=([a-z0-9]*).*/\1/g')
+MATCH="jupyter"
+
+function killall() {
+  proc_arry=($(ps -ef | grep $1 | awk '{print $2}'))
+
+  for i in "${proc_arry[@]}"; do
+    kill -9 $i
+  done
+}
+
+killall $MATCH
+deactivate
+
+MOUNT_POINT="%MOUNT_POINT%"
+VERSION="%VERSION%"
+
+INSTALL_DIR=$MOUNT_POINT/$VERSION
+
+eval "$(/${INSTALL_DIR}/miniconda/bin/conda shell.bash hook)"
+conda activate RESCALE
+
+cd $INSTALL_DIR
+
+# Start daemonized (in the background), so the main proces exits and the actual
+# simulation can start
+gunicorn --daemon --certfile $CERT --keyfile $CKEY -b 0.0.0.0:8888 app:server
