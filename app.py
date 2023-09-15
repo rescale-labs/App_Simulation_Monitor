@@ -7,7 +7,7 @@ import dash
 import dash_bootstrap_components as dbc
 from flask_restful import Api, Resource
 
-import notfound_layout
+import notfound_plugin
 
 logging.basicConfig(
     level=logging.INFO, format="[%(asctime)s] %(name)s %(levelname)s: %(message)s"
@@ -20,13 +20,13 @@ PREFIX = f"/notebooks/{os.getenv('RESCALE_CLUSTER_ID')}/"
 
 def init_layout():
     layout = None
-    for file in glob.glob("layouts/*_layout.py"):
+    for file in glob.glob("plugins/*_plugin.py"):
         module_name = file[8:-3]
-        module = importlib.import_module(f"layouts.{module_name}")
+        module = importlib.import_module(f"plugins.{module_name}")
         if module.is_applicable():
             layout = module.get_layout()
 
-    return layout if layout != None else notfound_layout.get_layout()
+    return layout if layout != None else notfound_plugin.get_layout()
 
 
 # We need to suppress exceptions as some components are created dynamically

@@ -1,7 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash import Input, Output, State, callback, dcc, html
 
-from layouts.cfx_utils import create_plot, find_mon_files
+from plugins.cfx_utils import create_plot, find_mon_files
 
 
 def is_applicable():
