@@ -1,14 +1,37 @@
+from shutil import which
+
 import dash_bootstrap_components as dbc
 from dash import Input, Output, State, callback, dcc, html
-
 from plugins.cfx_utils import create_plot, find_mon_files
+
+from utils import is_debug
 
 
 def is_applicable():
-    return True
+    """
+    All plugins need to implement this function. The applicability logic can be
+    based on input files, analysis command, job definition, etc.
+
+    For CFX, a simplistic implementation checks for the existence of the
+    cfx5mondata executable.
+
+    :returns True if monitoring is applicable, False otherwise
+    """
+
+    if is_debug():
+        return True
+    else:
+        return which("cfx5mondata") is not None
 
 
 def get_layout():
+    """
+    All plugins need to implement this function. It builds up the web
+    application layout and associated callbacks.
+
+    :returns root component of a Dash layout
+    """
+
     layout = dbc.Container(
         [
             html.Div(
@@ -35,7 +58,11 @@ def get_layout():
     )
     def update_mon_options(n_clicks):
         """
-        Populate mon-file dropdown when the user clicks Find mon-files
+        Populate mon-file dropdown when the user clicks Find mon-files.
+
+        :returns mon-file selection dropdown component and varrule selection
+                 components or a component informing the user about mon-files
+                 not found.
         """
 
         mon_files = find_mon_files()
@@ -55,7 +82,7 @@ def get_layout():
                 "Select mon-file",
                 dcc.Dropdown(
                     id="mon-dropdown",
-                    style={"width": "400px"},
+                    style={"width": "800px"},
                     options=mon_files,
                     value=mon_files[0] if len(mon_files) == 1 else None,
                 ),
@@ -91,25 +118,25 @@ def get_layout():
     def update_graph(n_clicks, mon_file, varrule):
         """
         Update the graph when the user clicks the Reload button.
+
+        :returns a graph of variable values matching varrule or a component
+                 informing the user of missing timesteps.
         """
 
-        if mon_file == None:
-            return None
-        else:
-            fig = create_plot(mon_file, varrule)
+        fig = create_plot(mon_file, varrule)
 
-            if fig:
-                return dcc.Graph(figure=fig, id="graph")
-            else:
-                return html.Div(
-                    [
-                        "No monitor values reported.",
-                        html.Br(),
-                        "Simulation is probably still to reach the first timestep.",
-                        html.Br(),
-                        "Try again in a few minutes...",
-                    ],
-                    style={"background": "yellow"},
-                )
+        if fig:
+            return dcc.Graph(figure=fig, id="graph")
+        else:
+            return html.Div(
+                [
+                    "No monitor values reported.",
+                    html.Br(),
+                    "Simulation is probably still to reach the first timestep.",
+                    html.Br(),
+                    "Try again in a few minutes...",
+                ],
+                style={"background": "yellow"},
+            )
 
     return layout

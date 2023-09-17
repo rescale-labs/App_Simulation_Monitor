@@ -1,8 +1,8 @@
 #!/bin/bash
 
-ANALYSIS_CODE="com_rescale_emea_simulation_monitor"
-MOUNT_POINT="/program/$ANALYSIS_CODE"
-VERSION="2023.09.12-dev"
+ANALYSIS_CODE="rescale_simmon"
+VERSION="2023.09.16-dev"
+MOUNT_POINT="/program/${ANALYSIS_CODE}_${VERSION}"
 
 # Using templates makes it easier to publish new versions without touching multiple files.
 instantiate_template() {
@@ -19,7 +19,7 @@ instantiate_template spub_launch.sh-templ spub_launch.sh
 
 # Prepare distribution zip.
 mkdir dist
-cp -R ../*.py ../requirements.txt ../assets ../layouts dist/
+cp -R ../*.py ../requirements.txt ../assets ../plugins dist/
 cp spub_launch.sh dist/
 zip -r dist.zip dist/
 rm -fr dist/
@@ -51,7 +51,7 @@ done
 ssh_cmd=`echo "$ssh_command" | sed 's/ssh/ssh -o \"StrictHostKeyChecking=no\"/g'`" \"cd work && . ./spub_build.sh\""
 eval $ssh_cmd
 
-# Sleep for a minute (seems to help in solving the zero-size files issue)
+# Sleep for 2 minutes (seems to help in solving the zero-size files issue)
 sleep 60
 
 # Publish tile.

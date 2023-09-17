@@ -2,6 +2,7 @@ import glob
 import subprocess
 from io import StringIO
 from pathlib import Path
+import os
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -18,15 +19,16 @@ def find_mon_files():
         mon_file_pattern = "**/mon"
         mon_files = glob.glob(mon_file_pattern, recursive=True, root_dir=Path.home())
 
+        mon_files = [os.path.join(Path.home(), f) for f in mon_files]
         return mon_files
     else:
-        return ["tests/mon"]
+        return [os.path.join(os.getcwd(), "tests/mon")]
 
 
 def get_csv_data(mon_file, varrule):
     """
     Get the csv data for the relevant variables using the cfx5mondata command.
-    
+
     :param mon_file: the mon file
     :param varrule: varrule for cfx5mondata
     :returns dataframe or empty dataframe if there are no monitoring values
@@ -65,6 +67,7 @@ def get_csv_data(mon_file, varrule):
 def create_plot(mon_file, varrule):
     """
     Find relevant variables, read the csv data and create a new plotly plot.
+
     :param mon_file: mon file to read
     :param varrule: varrule for cfx5mondata call
     :returns figure or None if dataframe is empty

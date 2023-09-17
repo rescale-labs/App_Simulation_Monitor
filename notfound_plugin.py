@@ -4,7 +4,9 @@ from dash import html
 
 def get_layout():
     """
-    Returns default layout with information
+    Returns default layout with information about supported analyses.
+    
+    :returns Dash root layout component
     """
     return dbc.Container(
         [
