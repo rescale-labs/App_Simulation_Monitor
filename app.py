@@ -2,35 +2,72 @@ import glob
 import importlib
 import logging
 import os
+import sys
+from pathlib import Path
 
 import dash
 import dash_bootstrap_components as dbc
 from flask_restful import Api, Resource
 
 import notfound_plugin
+from utils import is_debug
 
-logging.basicConfig(
-    level=logging.INFO, format="[%(asctime)s] %(name)s %(levelname)s: %(message)s"
-)
+APP_ID = "com_rescale_emea_simulation_monitor"
+LOCAL_CLUSTER_ID = "local"
+CLUSTER_ID = os.getenv("RESCALE_CLUSTER_ID", LOCAL_CLUSTER_ID)
+PREFIX = f"/notebooks/{CLUSTER_ID}/"
 
-APP_ID = "com_rescale_simulation_monitor"
+logger = logging.getLogger(__name__)
+if CLUSTER_ID != LOCAL_CLUSTER_ID:
+    logging.basicConfig(
+        filename=os.path.join(Path.home(), "work", f"{APP_ID}.log"),
+        filemode="w",
+        level=logging.DEBUG,
+    )
+else:
+    logging.basicConfig(filename=f"{APP_ID}.log", filemode="w", level=logging.DEBUG)
 
-PREFIX = f"/notebooks/{os.getenv('RESCALE_CLUSTER_ID')}/"
+
+def handle_unhandled_exception(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+    logger.critical(
+        "Unhandled exception", exc_info=(exc_type, exc_value, exc_traceback)
+    )
 
 
-def init_layout():
+sys.excepthook = handle_unhandled_exception
+
+
+def find_layout():
+    """
+    Function goes through all Python modules with _layout postfix stored in the
+    plugins directory and returns layout of the last applicable module.
+
+    :returns Dash root component for applicable module or a module not found
+             component
+    """
     layout = None
-    for file in glob.glob("plugins/*_plugin.py"):
-        module_name = file[8:-3]
-        module = importlib.import_module(f"plugins.{module_name}")
-        if module.is_applicable():
-            layout = module.get_layout()
+
+    if not is_debug():
+        for file in glob.glob("plugins/*_plugin.py"):
+            module_name = file[8:-3]
+            module = importlib.import_module(f"plugins.{module_name}")
+            if module.is_applicable():
+                layout = module.get_layout()
+    else:
+        # Import the plugin you want to test when developing locally
+        from plugins.cfx_plugin import get_layout, is_applicable
+
+        if is_applicable():
+            layout = get_layout()
 
     return layout if layout != None else notfound_plugin.get_layout()
 
 
-# We need to suppress exceptions as some components are created dynamically
-# within callbacks
+# We need to suppress callback exceptions as some components are created
+# conditionally within callbacks.
 app = dash.Dash(
     __name__,
     external_stylesheets=[dbc.themes.BOOTSTRAP],
@@ -40,7 +77,7 @@ app = dash.Dash(
 )
 
 
-app.layout = init_layout()
+app.layout = find_layout()
 server = app.server
 
 
