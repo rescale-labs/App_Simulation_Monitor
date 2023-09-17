@@ -24,7 +24,7 @@ When specifying a Job, the Simulation Monitor application needs to be attached a
 
 Once the cluster is started, navigate to the Job Detail page, click on the Status page and look for a Notebook URL in the Logs section. Open the URL in a new tab and start interacting with the web application.
 
-> TODO: GIF SCREEN CAST
+![](README.images/app_simulation_monitor.gif)
 
 For the CFX monitoring specifically, the user may need to wait until the simulation properly starts. The CFX module will inform the user when the `mon` file is not yet available and when the `mon` file does not yet contain usable progress information.
 
