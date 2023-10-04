@@ -1,10 +1,13 @@
-from shutil import which
+import logging
+import os
 
 import dash_bootstrap_components as dbc
 from dash import Input, Output, State, callback, dcc, html
-from plugins.cfx_utils import create_plot, find_mon_files
 
+from plugins.cfx_utils import create_plot, find_mon_files
 from utils import is_debug
+
+logger = logging.getLogger(__name__)
 
 
 def is_applicable():
@@ -12,8 +15,8 @@ def is_applicable():
     All plugins need to implement this function. The applicability logic can be
     based on input files, analysis command, job definition, etc.
 
-    For CFX, a simplistic implementation checks for the existence of the
-    cfx5mondata executable.
+    Simplictic implementation relies on existence of a specific exacutable
+    call in the process_output.log
 
     :returns True if monitoring is applicable, False otherwise
     """
@@ -21,7 +24,9 @@ def is_applicable():
     if is_debug():
         return True
     else:
-        return which("cfx5mondata") is not None
+        cfx_version = os.getenv("ANSYSCFX_VERSION", None)
+        logger.debug(f"ANSYS CFX version: {cfx_version}")
+        return True if cfx_version else False
 
 
 def get_layout():
@@ -41,9 +46,7 @@ def get_layout():
             html.P(
                 "This web app can be used to monitor ANSYS CFX jobs running on Rescale in real time.",
             ),
-            html.Button(
-                "Find mon-files", id="button-find-mon", style={"marginTop": 12}
-            ),
+            dbc.Button("Find mon-files", id="button-find-mon", style={"marginTop": 12}),
             html.Div(
                 id="monfile-div",
                 style={"marginTop": 12},
@@ -99,7 +102,7 @@ def get_layout():
                     ],
                     style={"marginTop": 12},
                 ),
-                html.Button(
+                dbc.Button(
                     "Reload",
                     id="button-reload",
                     style={"marginTop": 12},

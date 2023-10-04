@@ -54,12 +54,18 @@ def find_layout():
         for file in glob.glob("plugins/*_plugin.py"):
             module_name = file[8:-3]
             module = importlib.import_module(f"plugins.{module_name}")
+
             if module.is_applicable():
                 layout = module.get_layout()
+                logger.debug(f"Module {module}: applicable")
+            else:
+                logger.debug(f"Module {module}: not applicable")
     else:
-        # Import the plugin you want to test when developing locally
-        from plugins.cfx_plugin import get_layout, is_applicable
+        logger.debug("Running with debugger attached.")
 
+        # Import the plugin you want to test when developing locally
+        from plugins.starccm_plugin import get_layout, is_applicable
+        
         if is_applicable():
             layout = get_layout()
 
@@ -99,4 +105,4 @@ api = Api(server)
 api.add_resource(RescaleAppDiscovery, f"{PREFIX}/.rescale-app")
 
 if __name__ == "__main__":
-    app.run_server(debug=False)
+    app.run_server(debug=True)

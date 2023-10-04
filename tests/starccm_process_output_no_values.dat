@@ -1,0 +1,85 @@
+[2023-07-12T07:34:24Z]: Launching starccm+ -power -classpath . -batch Run.java -param "vVehicle" 5 -param "aSlip" 0 -rr -rrthreads N -rgraphics mesa -graphics mesa -load bus-gamma-0086-01.sim | tee bus-gamma-0086-01.log, Working dir: /enc/udeprod_ZsMyHc/work.  Process output follows:
+[2023-07-12T07:34:24Z]: Using default -rsh setting (ssh)
+[2023-07-12T07:34:24Z]: Using default -np setting (480)
+[2023-07-12T07:34:24Z]: Using default -machinefile setting (/enc/udeprod_ZsMyHc/machinefile)
+[2023-07-12T07:34:24Z]: /program/starccm-16.02.008/16.02.008/star/bin/starccm+ -rsh ssh -np 480 -machinefile /enc/udeprod_ZsMyHc/machinefile -mppflags -ibv -e MPI_IB_PKEY=0x8043 -mpi platform -power -classpath . -batch Run.java -param vVehicle 5 -param aSlip 0 -rr -rrthreads N -rgraphics mesa -graphics mesa -load bus-gamma-0086-01.sim
+[2023-07-12T07:34:50Z]: Starting local server: /program/starccm-16.02.008/16.02.008/star/bin/starccm+ -np 480 -machinefile /enc/udeprod_ZsMyHc/machinefile -mpi platform -power -xencoded-param dlZlaGljbGU= NQ== -xencoded-param YVNsaXA= MA== -rrthreads N -mppflags "-ibv -e MPI_IB_PKEY=0x8043" -rgraphics mesa -server  -xencoded-session YnVzLWdhbW1hLTAwODYtMDEuc2lt
+[2023-07-12T07:34:53Z]: Starting parallel server
+[2023-07-12T07:35:40Z]: License build date: 21 January 2021
+[2023-07-12T07:35:40Z]: This version of the code requires license version 2021.02 or greater.
+[2023-07-12T07:35:41Z]: Checking license file: 1999@flex.cd-adapco.com
+[2023-07-12T07:35:41Z]: MPI Distribution : IBM Platform MPI-09.01.04.03
+[2023-07-12T07:35:41Z]: Host 0 -- 172.16.1.95  -- Ranks 0-119
+[2023-07-12T07:35:41Z]: Host 1 -- 172.16.1.142 -- Ranks 120-239
+[2023-07-12T07:35:41Z]: Host 2 -- 172.16.1.132 -- Ranks 240-359
+[2023-07-12T07:35:41Z]: Host 3 -- 172.16.1.98  -- Ranks 360-479
+[2023-07-12T07:35:41Z]: Process rank 0 172.16.1.95 46215
+[2023-07-12T07:35:41Z]: Total number of processes : 480
+[2023-07-12T07:35:41Z]: 
+[2023-07-12T07:35:41Z]: Simcenter STAR-CCM+ 2021.1 Build 16.02.008 (linux-x86_64-2.17/gnu9.2)
+[2023-07-12T07:35:41Z]: 
+[2023-07-12T07:35:41Z]: 1 copy of ccmppower checked out from 1999@flex.cd-adapco.com
+[2023-07-12T07:35:41Z]: Feature ccmppower expires in 127 days
+[2023-07-12T07:35:41Z]: Wed Jul 12 07:35:41 2023
+[2023-07-12T07:35:41Z]: 
+[2023-07-12T07:35:41Z]: Server::start -host d7527270000000:47828
+[2023-07-12T07:35:42Z]: Loading: bus-gamma-0086-01.sim
+[2023-07-12T07:35:44Z]: Loading module: CadModeler
+[2023-07-12T07:35:56Z]: Loading module: MeshingSurfaceRepair
+[2023-07-12T07:36:04Z]: Started Parasolid modeler version 33.00.181
+[2023-07-12T07:36:04Z]: Loading module: PLMXmlIo
+[2023-07-12T07:36:10Z]: Loading module: StarSurfaceWrapper
+[2023-07-12T07:36:11Z]: Loading module: StarResurfacer
+[2023-07-12T07:36:11Z]: Loading module: StarTrimmer
+[2023-07-12T07:36:13Z]: Loading module: CoupledFlowModel
+[2023-07-12T07:36:16Z]: Loading module: KeTurbModel
+[2023-07-12T07:36:17Z]: Loading module: KwTurbModel
+[2023-07-12T07:36:17Z]: Loading module: StarAmr
+[2023-07-12T07:36:17Z]: Loading module: AmrMapping
+[2023-07-12T07:36:17Z]: Loading module: StarDualMesher
+[2023-07-12T07:36:20Z]: Loading module: StarOffset
+[2023-07-12T07:36:20Z]: Saved by:
+[2023-07-12T07:36:20Z]:   Simcenter STAR-CCM+ 2021.1 Build 16.02.008 (win64/intel20.1vc14.2) Serial 
+[2023-07-12T07:36:28Z]:   Remote rendering is using Mesa OpenGL library (software rendering).
+[2023-07-12T07:36:28Z]: Starting remote rendering via: /program/starccm-16.02.008/16.02.008/star/lib/linux-x86_64-2.17/gnu9.2/lib/star-renderer -rgraphics mesa -mode single 
+[2023-07-12T07:36:31Z]: Using renderer on d7527270000000:47927
+[2023-07-12T07:36:32Z]: Playing macro: /enc/udeprod_ZsMyHc/work/Run.java
+[2023-07-12T07:36:34Z]: --------------------------------------------------------
+[2023-07-12T07:36:34Z]: 
+[2023-07-12T07:36:34Z]: Running bus-gamma-0086-01...
+[2023-07-12T07:36:34Z]: 
+[2023-07-12T07:36:34Z]: No CAD models to update.
+[2023-07-12T07:36:34Z]: --------------------------------------------------------
+[2023-07-12T07:36:34Z]: 
+[2023-07-12T07:36:34Z]: Running volume meshers...
+[2023-07-12T07:36:34Z]: 
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Replace Wheels
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Replace Bodywork
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Replace Domain
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Replace Fans
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Replace Hx Cores
+[2023-07-12T07:36:34Z]: 	Running meshing operation: Replace Front Suspension
+[2023-07-12T07:36:34Z]: 
+[2023-07-12T07:36:34Z]: WARNING: Input file name not selected for operation : Replace Front Suspension. 
+[2023-07-12T07:36:34Z]: 
+[2023-07-12T07:36:34Z]: 	Running meshing operation: Replace Rear Suspension
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Domain - Zip Edges
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Fan1 - Zip Edges
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Fan2 - Zip Edges
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Fan3 - Zip Edges
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Fan4 - Zip Edges
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Fan5 - Zip Edges
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Fan6 - Zip Edges
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Fan7 - Zip Edges
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Core 1 Volume Mesh
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Core 2 Volume Mesh
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Core 3 Volume Mesh
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Core 4 Volume Mesh
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Core 5 Volume Mesh
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Core 6 Volume Mesh
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Core 7 Volume Mesh
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Fan Volume Mesh
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Offset Fan Outlets
+[2023-07-12T07:36:34Z]: 	Skipping meshing operation (already complete): Domain Surface Mesh
+[2023-07-12T07:36:34Z]: 
+[2023-07-12T07:36:34Z]: WARNING: Input file name not selected for operation : Replace Rear Suspension. 
