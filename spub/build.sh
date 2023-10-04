@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ANALYSIS_CODE="rescale_simmon"
-VERSION="2023.09.16-dev"
+VERSION="2023.09.27-dev"
 MOUNT_POINT="/program/${ANALYSIS_CODE}_${VERSION}"
 
 # Using templates makes it easier to publish new versions without touching multiple files.
@@ -18,6 +18,7 @@ instantiate_template spub_build.sh-templ spub_build.sh
 instantiate_template spub_launch.sh-templ spub_launch.sh
 
 # Prepare distribution zip.
+find plugins | grep -E "(/__pycache__$|\.pyc$|\.pyo$)" | xargs rm -rf
 mkdir dist
 cp -R ../*.py ../requirements.txt ../assets ../plugins dist/
 cp spub_launch.sh dist/

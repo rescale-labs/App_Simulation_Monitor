@@ -1,8 +1,8 @@
 import glob
+import os
 import subprocess
 from io import StringIO
 from pathlib import Path
-import os
 
 import pandas as pd
 import plotly.graph_objects as go
