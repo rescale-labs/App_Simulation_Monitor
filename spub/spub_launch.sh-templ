@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # Check if jupyter4all is enabled
 CERT=$HOME/.certs/nb.pem
 CKEY=$HOME/.certs/nb.key
