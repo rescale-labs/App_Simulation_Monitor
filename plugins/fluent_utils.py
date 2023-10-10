@@ -73,8 +73,8 @@ def parse_file(process_output_file_path):
 
 def get_df():
     if is_debug():
-        # file = find_file("**/fluent_process_output.dat", "..")
-        file = find_file("**/fluent_process_output_no_values.dat", "..")
+        file = find_file("**/fluent_process_output.dat", "..")
+        # file = find_file("**/fluent_process_output_no_values.dat", "..")
     else:
         home_dir = os.path.expanduser("~")
         file = find_file("**/process_output.log", home_dir)

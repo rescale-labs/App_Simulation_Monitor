@@ -16,6 +16,11 @@ conda activate RESCALE
 
 pip install --upgrade pip
 
+if [ ! -d "dist" ]
+then
+    unzip dist.zip
+fi
+
 cp -R dist/* $INSTALL_DIR
 cd $INSTALL_DIR
 pip install -r requirements.txt
