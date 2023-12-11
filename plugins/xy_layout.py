@@ -29,14 +29,14 @@ def get_axes_selector_children(columns):
         html.Div(
             [
                 dbc.Button(
-                    "Plot",
-                    id="plot-button",
+                    "Add Plot",
+                    id="add-plot-button",
                     n_clicks=0,
                     style={"marginRight": 6},
                 ),
                 dbc.Button(
-                    "Clear Plot",
-                    id="clear-plot-button",
+                    "Clear All Plots",
+                    id="clear-plots-button",
                     n_clicks=0,
                     style={"marginRight": 6},
                 ),
@@ -102,8 +102,8 @@ def get_layout(get_df, analysis_name):
 
     @callback(
         Output("interactive-plot-div", "children"),
-        Input("plot-button", "n_clicks"),
-        Input("clear-plot-button", "n_clicks"),
+        Input("add-plot-button", "n_clicks"),
+        Input("clear-plots-button", "n_clicks"),
         Input("refresh-button", "n_clicks"),
         State("x-axis-selector", "value"),
         State("y-axis-selector", "value"),
@@ -119,7 +119,7 @@ def get_layout(get_df, analysis_name):
         button_id = ctx.triggered_id
         logger.debug(f"Triggered: {button_id}")
 
-        if button_id == "clear-plot-button":
+        if button_id == "clear-plots-button":
             return ""
         elif x_axis_value is None or not y_axis_values:
             return html.P(

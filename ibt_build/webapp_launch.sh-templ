@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Wait for the jupyter4all infra to be initialised. Timeout as it may happen
+# that jupyter4all is not enabled.
+
+# Wait for a minute and fail
+JPID=`ps -o pid --no-headers -C jupyter-notebook`
+JPPID=`ps -o ppid --no-headers -C jupyter-notebook`
+count=1
+
+while [ -z "$JPID" ] && [ $count -le 6 ]
+do
+  echo "Waiting for Jupyter to start..."
+  sleep 10
+  JPID=`ps -o pid --no-headers -C jupyter-notebook`
+  JPPID=`ps -o ppid --no-headers -C jupyter-notebook`
+  count=$((count+1))
+done
+
+# Check if jupyter4all is enabled
+if [ -z "$JPID" ]
+then
+    echo "!"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "! ERROR: Rescale App failed to start.               !"
+    echo "!        Make sure the jupyter4all flag is enabled. !"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "!"
+
+    return 1
+fi
+
+kill -9 $JPPID $JPID
+
+MOUNT_POINT="%MOUNT_POINT%"
+VERSION="%VERSION%"
+
+INSTALL_DIR=$MOUNT_POINT/$VERSION
+
+eval "$(/${INSTALL_DIR}/miniconda/bin/conda shell.bash hook)"
+conda activate RESCALE
+
+cd $INSTALL_DIR
+
+# Start daemonized (in the background), so the main proces exits and the actual
+# simulation can start
+CERT=$HOME/.certs/nb.pem
+CKEY=$HOME/.certs/nb.key
+
+gunicorn --daemon --certfile $CERT --keyfile $CKEY -b 0.0.0.0:8888 app:server

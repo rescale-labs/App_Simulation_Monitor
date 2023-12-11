@@ -1,0 +1,9 @@
+#!/bin/bash
+#RESCALE_NAME="[build] Simulation Monitor %VERSION%"
+#RESCALE_ANALYSIS=sxp-interactive-batch
+#RESCALE_ANALYSIS_VERSION=impi_2019
+#RESCALE_CORE_TYPE=emerald_max
+#RESCALE_CORES=1
+#RESCALE_WALLTIME=1
+
+bash bits_build.sh

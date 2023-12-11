@@ -12,7 +12,7 @@ from flask_restful import Api, Resource
 import notfound_plugin
 from utils import is_debug
 
-APP_ID = "com_rescale_emea_simulation_monitor"
+APP_ID = "rescale_simmon"
 LOCAL_CLUSTER_ID = "local"
 CLUSTER_ID = os.getenv("RESCALE_CLUSTER_ID", LOCAL_CLUSTER_ID)
 PREFIX = f"/notebooks/{CLUSTER_ID}/"

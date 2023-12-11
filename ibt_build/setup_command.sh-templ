@@ -1,0 +1,8 @@
+#!/bin/bash
+
+MOUNT_POINT="%MOUNT_POINT%"
+VERSION="%VERSION%"
+
+INSTALL_DIR=$MOUNT_POINT/$VERSION
+
+$INSTALL_DIR/webapp_launch.sh > $HOME/work/process_output_rescale_simmon.log 2>&1 &
