@@ -42,6 +42,13 @@ conda activate RESCALE
 
 cd $INSTALL_DIR
 
+# When the setup_command is run RESCALE_CLUSTER_ID is not set, even if this
+# script is run with JOB_USER - HOME will be set to /root, envvars set by
+# attached tiles like ANSYSCFX_VERSION are not there yet. However when Jupyter
+# starts the platform populated .bash_profile of the job user with all we need.
+export HOME=/enc/$JOB_USER
+source $HOME/.bash_profile
+
 # Start daemonized (in the background), so the main proces exits and the actual
 # simulation can start
 CERT=$HOME/.certs/nb.pem
