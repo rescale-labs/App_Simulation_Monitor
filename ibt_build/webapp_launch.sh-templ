@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Launch only on head node
+if [ "$MPI_ROLE" == "MPI_SLAVE" ]; then return 0; fi
+
 # Wait for the jupyter4all infra to be initialised. Timeout as it may happen
 # that jupyter4all is not enabled.
 
