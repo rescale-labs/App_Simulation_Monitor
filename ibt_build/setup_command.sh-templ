@@ -1,8 +1,24 @@
 #!/bin/bash
 
+echo Entering setup_command
+
+JOB_USER=$1
+MPI_ROLE=$2
+
 MOUNT_POINT="%MOUNT_POINT%"
 VERSION="%VERSION%"
 
 INSTALL_DIR=$MOUNT_POINT/$VERSION
 
-$INSTALL_DIR/webapp_launch.sh > $HOME/work/process_output_rescale_simmon.log 2>&1 &
+echo Instantiating the service configuration file
+cat $INSTALL_DIR/rescaleapp.service \
+    | sed -e "s|%JOB_USER%|$JOB_USER|g" -e "s|%MPI_ROLE%|$MPI_ROLE|g" \
+    > /etc/systemd/system/rescaleapp.service
+
+echo Reloading the systemd deamon
+systemctl daemon-reload
+
+echo Starting resaleapp service
+systemctl start rescaleapp
+
+echo Exiting setup_command

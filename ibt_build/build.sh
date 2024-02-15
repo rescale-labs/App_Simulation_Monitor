@@ -12,7 +12,7 @@ instantiate_template() {
 }
 
 ANALYSIS_CODE="rescale_simmon"
-VERSION="2024.01.28"
+VERSION="2024.02.14"
 MOUNT_POINT="/program/${ANALYSIS_CODE}_${VERSION}"
 
 instantiate_template bits_build.sh-templ bits_build.sh
@@ -20,11 +20,12 @@ instantiate_template submit.sh-templ submit.sh
 instantiate_template create_install_bits.spec-templ create_install_bits.spec
 instantiate_template webapp_launch.sh-templ webapp_launch.sh
 instantiate_template setup_command.sh-templ setup_command.sh
+instantiate_template rescaleapp.service-templ rescaleapp.service
 
 find ../plugins | grep -E "(/__pycache__$|\.pyc$|\.pyo$)" | xargs rm -rf
 mkdir dist
 cp -R ../*.py ../requirements.txt ../assets ../plugins pngThumbnail.png dist/
-mv webapp_launch.sh setup_command.sh dist/
+mv webapp_launch.sh setup_command.sh rescaleapp.service dist/
 zip -r dist.zip dist/
 rm -fr dist/
 

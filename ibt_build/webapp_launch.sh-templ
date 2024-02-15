@@ -1,28 +1,37 @@
 #!/bin/bash
 
+JOB_USER=$1
+MPI_ROLE=$2
+
+MOUNT_POINT="%MOUNT_POINT%"
+VERSION="%VERSION%"
+
+FIRST_START_FILE=/tmp/.rescale_simmon_%VERSION%
+
 # Launch only on head node
-if [ "$MPI_ROLE" == "MPI_SLAVE" ]; then return 0; fi
+if [ "$MPI_ROLE" == "MPI_SLAVE" ]; then exit 0; fi
 
 # Wait for the jupyter4all infra to be initialised. Timeout as it may happen
-# that jupyter4all is not enabled.
-
-# Wait for a minute and fail
-JPID=`ps -o pid --no-headers -C jupyter-notebook`
-JPPID=`ps -o ppid --no-headers -C jupyter-notebook`
-count=1
-
-while [ -z "$JPID" ] && [ $count -le 6 ]
-do
-  echo "Waiting for Jupyter to start..."
-  sleep 10
+# that jupyter4all is not enabled. Run the jupyter replacement code only on the
+# fist run.
+if ! [ -f $FIRST_START_FILE ]
+then
   JPID=`ps -o pid --no-headers -C jupyter-notebook`
   JPPID=`ps -o ppid --no-headers -C jupyter-notebook`
-  count=$((count+1))
-done
+  count=1
 
-# Check if jupyter4all is enabled
-if [ -z "$JPID" ]
-then
+  while [ -z "$JPID" ] && [ $count -le 30 ]
+  do
+    echo "Waiting for Jupyter to start..."
+    sleep 10
+    JPID=`ps -o pid --no-headers -C jupyter-notebook`
+    JPPID=`ps -o ppid --no-headers -C jupyter-notebook`
+    count=$((count+1))
+  done
+
+  # Check if jupyter4all is enabled
+  if [ -z "$JPID" ]
+  then
     echo "!"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "! ERROR: Rescale App failed to start.               !"
@@ -30,13 +39,16 @@ then
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "!"
 
-    return 1
+    exit 1
+  fi
+
+  # Sleep some more to let platform finalize the notebook checks and not break
+  # the cluster startup - if we proceed with the kill immadielety cluster will
+  # not transition to Running workflow...
+  sleep 10
+  kill -9 $JPPID $JPID
+  touch $FIRST_START_FILE
 fi
-
-kill -9 $JPPID $JPID
-
-MOUNT_POINT="%MOUNT_POINT%"
-VERSION="%VERSION%"
 
 INSTALL_DIR=$MOUNT_POINT/$VERSION
 
@@ -57,4 +69,4 @@ source $HOME/.bash_profile
 CERT=$HOME/.certs/nb.pem
 CKEY=$HOME/.certs/nb.key
 
-gunicorn --daemon --certfile $CERT --keyfile $CKEY -b 0.0.0.0:8888 app:server
+gunicorn --certfile $CERT --keyfile $CKEY -b 0.0.0.0:8888 app:server

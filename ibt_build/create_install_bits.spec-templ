@@ -6,4 +6,4 @@ std_command, #
 gpu_command, #
 mpi_command, #
 description, Simulation progress monitoring tool. The following analyses are supported: ANSYS CFX, CONVERGE, FLUENT. The jupyter4all feature needs to be enabled.
-setup_command, su - ${JOB_USER} bash -c "%MOUNT_POINT%/%VERSION%/setup_command.sh"
+setup_command, source %MOUNT_POINT%/%VERSION%/setup_command.sh ${JOB_USER} ${MPI_ROLE}
