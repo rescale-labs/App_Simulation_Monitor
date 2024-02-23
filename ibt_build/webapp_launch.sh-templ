@@ -8,44 +8,32 @@ VERSION="%VERSION%"
 
 FIRST_START_FILE=/tmp/.rescale_simmon_%VERSION%
 
-# Launch only on head node
-if [ "$MPI_ROLE" == "MPI_SLAVE" ]; then exit 0; fi
-
-# Wait for the jupyter4all infra to be initialised. Timeout as it may happen
-# that jupyter4all is not enabled. Run the jupyter replacement code only on the
+# Make sure the jupyter4all infra is initialised. Timeout as it may happen when
+# jupyter4all flag is not enabled. Run the jupyter replacement code only on the
 # fist run.
-if ! [ -f $FIRST_START_FILE ]
-then
-  JPID=`ps -o pid --no-headers -C jupyter-notebook`
-  JPPID=`ps -o ppid --no-headers -C jupyter-notebook`
+if ! [ -f $FIRST_START_FILE ]; then
+  JPID=$(ps -o pid --no-headers -C jupyter-notebook)
+  JPPID=$(ps -o ppid --no-headers -C jupyter-notebook)
   count=1
 
-  while [ -z "$JPID" ] && [ $count -le 30 ]
-  do
+  while [ -z "$JPID" ] && [ $count -le 30 ]; do
     echo "Waiting for Jupyter to start..."
     sleep 10
-    JPID=`ps -o pid --no-headers -C jupyter-notebook`
-    JPPID=`ps -o ppid --no-headers -C jupyter-notebook`
-    count=$((count+1))
+    JPID=$(ps -o pid --no-headers -C jupyter-notebook)
+    JPPID=$(ps -o ppid --no-headers -C jupyter-notebook)
+    count=$((count + 1))
   done
 
   # Check if jupyter4all is enabled
-  if [ -z "$JPID" ]
-  then
-    echo "!"
-    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    echo "! ERROR: Rescale App failed to start.               !"
-    echo "!        Make sure the jupyter4all flag is enabled. !"
-    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    echo "!"
-
-    exit 1
+  if [ -z "$JPID" ]; then
+    echo >&2 "ERROR: Rescale App failed to start. Check jupyter4all flag is enabled."
+    exit 2
   fi
 
-  # Sleep some more to let platform finalize the notebook checks and not break
-  # the cluster startup - if we proceed with the kill immadielety cluster will
-  # not transition to Running workflow...
-  sleep 10
+  # Add some time padding to make sure platform finishes all health checks before
+  # killing the Jupyter server
+  echo "Getting Simulation Monitor RescaleApp ready... It will become available in 30 seconds."
+  sleep 30
   kill -9 $JPPID $JPID
   touch $FIRST_START_FILE
 fi
@@ -68,5 +56,7 @@ source $HOME/.bash_profile
 # simulation can start
 CERT=$HOME/.certs/nb.pem
 CKEY=$HOME/.certs/nb.key
+
+echo "Simulation Monitor RescaleApp ready. Open the Jupyter Notebook link to access it."
 
 gunicorn --certfile $CERT --keyfile $CKEY -b 0.0.0.0:8888 app:server

@@ -12,7 +12,7 @@ instantiate_template() {
 }
 
 ANALYSIS_CODE="rescale_simmon"
-VERSION="2024.02.14"
+VERSION="2024.02.23"
 MOUNT_POINT="/program/${ANALYSIS_CODE}_${VERSION}"
 
 instantiate_template bits_build.sh-templ bits_build.sh
