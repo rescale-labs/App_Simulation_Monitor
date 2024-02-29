@@ -16,10 +16,19 @@ APP_ID = "rescale_simmon"
 LOCAL_CLUSTER_ID = "local"
 
 CLUSTER_ID = os.getenv("RESCALE_CLUSTER_ID", LOCAL_CLUSTER_ID)
+HOME = os.getenv("HOME", Path.home())
+
 PREFIX = f"/notebooks/{CLUSTER_ID}/"
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename=f"/tmp/{APP_ID}.log", filemode="w", level=logging.DEBUG)
+if CLUSTER_ID != LOCAL_CLUSTER_ID:
+    logging.basicConfig(
+        filename=os.path.join(HOME, "work", f"{APP_ID}.log"),
+        filemode="w",
+        level=logging.DEBUG,
+    )
+else:
+    logging.basicConfig(filename=f"{APP_ID}.log", filemode="w", level=logging.DEBUG)
 
 
 def handle_unhandled_exception(exc_type, exc_value, exc_traceback):

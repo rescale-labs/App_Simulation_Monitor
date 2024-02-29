@@ -3,6 +3,8 @@
 JOB_USER=$1
 MPI_ROLE=$2
 
+export HOME=/enc/$JOB_USER
+
 MOUNT_POINT="%MOUNT_POINT%"
 VERSION="%VERSION%"
 
@@ -11,14 +13,14 @@ FIRST_START_FILE=/tmp/.rescale_simmon_%VERSION%
 # Make sure the jupyter4all infra is initialised. Timeout as it may happen when
 # jupyter4all flag is not enabled. Run the jupyter replacement code only on the
 # fist run.
-if ! [ -f $FIRST_START_FILE ]; then
+if [ ! -f $FIRST_START_FILE ]; then
   JPID=$(ps -o pid --no-headers -C jupyter-notebook)
   JPPID=$(ps -o ppid --no-headers -C jupyter-notebook)
-  count=1
+  count=0
 
-  while [ -z "$JPID" ] && [ $count -le 30 ]; do
+  while [ -z "$JPID" ] && [ $count -le 60 ]; do
     echo "Waiting for Jupyter to start..."
-    sleep 10
+    sleep 5
     JPID=$(ps -o pid --no-headers -C jupyter-notebook)
     JPPID=$(ps -o ppid --no-headers -C jupyter-notebook)
     count=$((count + 1))
@@ -26,14 +28,26 @@ if ! [ -f $FIRST_START_FILE ]; then
 
   # Check if jupyter4all is enabled
   if [ -z "$JPID" ]; then
-    echo >&2 "ERROR: Rescale App failed to start. Check jupyter4all flag is enabled."
+    echo "ERROR: Rescale App failed to start. Check jupyter4all flag is enabled."
     exit 2
   fi
 
-  # Add some time padding to make sure platform finishes all health checks before
-  # killing the Jupyter server
-  echo "Getting Simulation Monitor RescaleApp ready... It will become available in 30 seconds."
-  sleep 30
+  # Wait for the command to start executing
+  count=0
+  PID_FILE=$(find $HOME/work -name .rescalepid)
+  while [ ! "$PID_FILE" ] && [ $count -le 30 ]; do
+    echo "Waiting for Command to start executing..."
+    sleep 5
+    PID_FILE=$(find $HOME/work -name .rescalepid)
+    count=$((count + 1))
+  done
+
+  if [ ! "$PID_FILE" ]; then
+    echo "ERROR: .rescalepid file not detected in time."
+    exit 3
+  fi
+
+  # Hopefully all healthchecks are now done and we can replace the Jupyter server
   kill -9 $JPPID $JPID
   touch $FIRST_START_FILE
 fi
@@ -49,7 +63,6 @@ cd $INSTALL_DIR
 # script is run with JOB_USER - HOME will be set to /root, envvars set by
 # attached tiles like ANSYSCFX_VERSION are not there yet. However when Jupyter
 # starts the platform populated .bash_profile of the job user with all we need.
-export HOME=/enc/$JOB_USER
 source $HOME/.bash_profile
 
 # Start daemonized (in the background), so the main proces exits and the actual
