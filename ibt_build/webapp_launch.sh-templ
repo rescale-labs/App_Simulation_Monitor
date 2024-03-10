@@ -14,6 +14,22 @@ FIRST_START_FILE=/tmp/.rescale_simmon_%VERSION%
 # jupyter4all flag is not enabled. Run the jupyter replacement code only on the
 # fist run.
 if [ ! -f $FIRST_START_FILE ]; then
+  # Wait for the command to start executing
+  count=0
+  PID_FILE=$(find $HOME/work -name .rescalepid)
+  while [ ! "$PID_FILE" ] && [ $count -le 30 ]; do
+    echo "Waiting for Command to start executing..."
+    sleep 5
+    PID_FILE=$(find $HOME/work -name .rescalepid)
+    count=$((count + 1))
+  done
+
+  if [ ! "$PID_FILE" ]; then
+    echo "ERROR: .rescalepid file not detected in time."
+    exit 3
+  fi
+
+  # Hopefully all healthchecks are now done and we can replace the Jupyter server
   JPID=$(ps -o pid --no-headers -C jupyter-notebook)
   JPPID=$(ps -o ppid --no-headers -C jupyter-notebook)
   count=0
@@ -32,22 +48,6 @@ if [ ! -f $FIRST_START_FILE ]; then
     exit 2
   fi
 
-  # Wait for the command to start executing
-  count=0
-  PID_FILE=$(find $HOME/work -name .rescalepid)
-  while [ ! "$PID_FILE" ] && [ $count -le 30 ]; do
-    echo "Waiting for Command to start executing..."
-    sleep 5
-    PID_FILE=$(find $HOME/work -name .rescalepid)
-    count=$((count + 1))
-  done
-
-  if [ ! "$PID_FILE" ]; then
-    echo "ERROR: .rescalepid file not detected in time."
-    exit 3
-  fi
-
-  # Hopefully all healthchecks are now done and we can replace the Jupyter server
   kill -9 $JPPID $JPID
   touch $FIRST_START_FILE
 fi
