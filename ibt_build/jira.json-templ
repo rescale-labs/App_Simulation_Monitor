@@ -1,0 +1,82 @@
+{
+    "fields": {
+        "project": {
+            "key": "HPC"
+        },
+        "issuetype": {
+            "name": "Software Installation"
+        },
+        "customfield_10347": "%FULLY_SCOPED_DATE%",
+        "customfield_10171": "Rescale",
+        "customfield_10172": "Simulation Monitor",
+        "customfield_10173": "%VERSION%",
+        "customfield_10168": "Private",
+        "customfield_10170": "Linux",
+        "customfield_10169": "Batch",
+        "customfield_10174": "ALL",
+        "summary": "IBT: Deploy Rescale Simulation Monitor %VERSION% (visibility: PRIVATE)",
+        "description": {
+            "version": 1,
+            "type": "doc",
+            "content": [
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Build Job: "
+                        },
+                        {
+                            "type": "text",
+                            "text": "https://platform.rescale.com/jobs/%JOB_ID%/runs/1/results/",
+                            "marks": [
+                                {
+                                    "type": "link",
+                                    "attrs": {
+                                        "href": "https://platform.rescale.com/jobs/%JOB_ID%/runs/1/results/"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Type: Batch"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "OS: Linux"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Visibility: Private"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "CSP: All"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

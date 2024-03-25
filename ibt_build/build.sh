@@ -51,9 +51,7 @@ if [ $CREATE_TASK = true ]; then
     JIRA_USER=$(python3 -c "import configparser; c = configparser.ConfigParser(); c.read('${HOME}/.config/jira/apiconfig'); print(c['jira']['user'])")
     JIRA_APIKEY=$(python3 -c "import configparser; c = configparser.ConfigParser(); c.read('${HOME}/.config/jira/apiconfig'); print(c['jira']['apikey'])")
 
-    instantiate_template jira.json-template jira.json
-
-    echo $JIRA_USER:$JIRA_APIKEY
+    instantiate_template jira.json-templ jira.json
 
     curl -X POST https://rescale.atlassian.net/rest/api/3/issue \
         -H "Content-Type: application/json" \

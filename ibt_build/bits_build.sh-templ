@@ -22,7 +22,7 @@ then
     unzip dist.zip
 fi
 
-mv dist/pngThumbnail.png .
+mv dist/%ANALYSIS_CODE%.png .
 
 cp -R dist/* $INSTALL_DIR
 pushd $INSTALL_DIR
@@ -35,3 +35,8 @@ rm -fr dist* *-templ
 create_install_bits create_install_bits.spec << EOF
 %ANALYSIS_CODE%_%VERSION%
 EOF
+
+cd $HOME/work
+cp settings.json settings.json-orig
+jq '.software.pngThumbnail = "%ANALYSIS_CODE%.png"' settings.json-orig > settings.json
+rm settings.json-orig
