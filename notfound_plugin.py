@@ -16,7 +16,7 @@ def get_layout():
                 style={"margin-bottom": "1em"},
             ),
             html.Div(
-                "Supported analyses: ANSYS CFX, ANSYS Fluent, Star-CCM+",
+                "Supported analyses: ANSYS CFX, ANSYS Fluent, Star-CCM+, ANSYS Mechanical",
                 className="text-info fs-6",
                 style={"margin-bottom": "1em"},
             ),

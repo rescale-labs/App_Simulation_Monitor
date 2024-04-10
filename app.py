@@ -67,9 +67,10 @@ def find_layout():
         logger.debug("Running with debugger attached.")
 
         # Import the plugin you want to test when developing locally
-        from plugins.starccm_plugin import get_layout, is_applicable
+        from plugins.mech_plugin import get_layout, is_applicable
 
         if is_applicable():
+            print("hi")
             layout = get_layout()
 
     return layout if layout != None else notfound_plugin.get_layout()
