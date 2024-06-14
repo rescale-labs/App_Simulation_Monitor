@@ -17,7 +17,7 @@ if [ ! -f $FIRST_START_FILE ]; then
   # Wait for the command to start executing
   count=0
   PID_FILE=$(find $HOME/work -name .rescalepid)
-  while [ ! "$PID_FILE" ] && [ $count -le 30 ]; do
+  while [ ! "$PID_FILE" ] && [ $count -le 120 ]; do
     echo "Waiting for Command to start executing..."
     sleep 5
     PID_FILE=$(find $HOME/work -name .rescalepid)
@@ -30,15 +30,15 @@ if [ ! -f $FIRST_START_FILE ]; then
   fi
 
   # Hopefully all healthchecks are now done and we can replace the Jupyter server
-  JPID=$(ps -o pid --no-headers -C jupyter-notebook)
-  JPPID=$(ps -o ppid --no-headers -C jupyter-notebook)
+  JPID=$(ps -ef | grep -e jupyter-notebook | grep -v list | grep -v grep | awk '{print $2}')
+  JPPID=$(ps -ef | grep -e jupyter-notebook | grep -v list | grep -v grep | awk '{print $3}')
   count=0
 
   while [ -z "$JPID" ] && [ $count -le 60 ]; do
     echo "Waiting for Jupyter to start..."
     sleep 5
-    JPID=$(ps -o pid --no-headers -C jupyter-notebook)
-    JPPID=$(ps -o ppid --no-headers -C jupyter-notebook)
+    JPID=$(ps -ef | grep -e jupyter-notebook | grep -v list | grep -v grep | awk '{print $2}')
+    JPPID=$(ps -ef | grep -e jupyter-notebook | grep -v list | grep -v grep | awk '{print $3}')
     count=$((count + 1))
   done
 
