@@ -24,6 +24,7 @@ jobs:
         with:
           repository: rescale/soln-ibt-pipelines
           path: ibt_tools
+          token: ${{ env.IBT_PIPELINES_GITHUB_PAT }}
       - name: Run build
         run: |
           tree
