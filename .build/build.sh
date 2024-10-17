@@ -36,9 +36,6 @@ mv webapp_launch.sh setup_command.sh rescaleapp.service dist/
 
 zip -r dist.zip dist/
 
-JOB_ID=$(rescale-cli -q --profile us submit -e -i submit.sh | jq -r .id)
-echo "Submitted Job: ${JOB_ID}"
-
 echo "Uploading inputs..."
 FILE_ID=$(
     curl -s -X POST \
