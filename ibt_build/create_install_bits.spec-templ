@@ -1,9 +1,0 @@
-name, Simulation Monitor
-code, rescale-simmon
-version, %VERSION%
-version_code, %VERSION%
-std_command, #
-gpu_command, #
-mpi_command, #
-description, Simulation progress monitoring tool. The following analyses are supported: ANSYS CFX, CONVERGE, FLUENT. The jupyter4all feature needs to be enabled.
-setup_command, source %MOUNT_POINT%/%VERSION%/setup_command.sh ${JOB_USER} ${MPI_ROLE}

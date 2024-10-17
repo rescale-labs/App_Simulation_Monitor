@@ -1,0 +1,166 @@
+#!/bin/bash
+
+__validate_input() {
+   _inp=$1
+   _var=$2
+   _exit_on_failure=$3
+
+   # check if the var is not empty
+   if [[ -z ${_inp} ]]; then
+      if [[ ${_exit_on_failure} == "true" ]]; then
+         echo "Spec file does not set: ${_var} - exiting. If you want to skip setting this var - use "#" as its value."
+         exit 1
+      fi
+
+      unset _inp
+      while [ -z ${_inp} ]; do
+         echo "Input empty, please provide a value"
+         read _inp
+      done
+   fi
+   echo ${_var}=${_inp} >>$HOME/.ANALYSIS_DESCRIPTION
+}
+
+# TODO: This should be set outside this script
+export MPI_VERSION=2019.8.254
+
+DIR_NAME=$(dirname "$0")
+PROGRAM_ROOT=/program
+SETTINGS_FILE=settings.json
+
+# Read spec file
+if [[ -f "./${1}" ]]; then
+   . ./$1
+
+   if [[ ! -d "${PROGRAM_ROOT}/${dir}" ]]; then
+      echo "${dir} does not exist, please select from the following"
+      ls ${PROGRAM_ROOT}
+      exit 1
+   fi
+
+   echo "${PROGRAM_ROOT}/${dir}" >$HOME/.PROGRAM_PATH
+   __validate_input """${name}""" name true
+   __validate_input """${code}""" code true
+   __validate_input """${png_thumbnail}""" png_thumbnail true
+   __validate_input """${version}""" version true
+   __validate_input """${version_code}""" version_code true
+   __validate_input """${std_cmd}""" std_cmd true
+   __validate_input """${gpu_cmd}""" gpu_cmd true
+   __validate_input """${mpi_cmd}""" mpi_cmd true
+   __validate_input """${description}""" description true
+   __validate_input """${setup_command}""" setup_command true
+else
+   echo What directory in ${PROGRAM_ROOT} would you like to archive?
+   read dir
+
+   if [[ ! -d "${PROGRAM_ROOT}/${dir}" ]]; then
+      echo "${dir} does not exist, please select from the following"
+      ls ${PROGRAM_ROOT}
+      exit 1
+   fi
+   echo "${PROGRAM_ROOT}/${dir}" >$HOME/.PROGRAM_PATH
+
+   echo "Input the name of the analysis for this instal (input 's' to skip all the description inputs):"
+   read name
+
+   if [[ "${name}" != "s" ]]; then
+      __validate_input """${name}""" name
+
+      echo Input the code for the analysis for this install:
+      read code
+      __validate_input """${code}""" code
+
+      echo Input the name of the version for this install:
+      read version
+      __validate_input """${version}""" version
+
+      echo Input the version code for this install:
+      read version_code
+      __validate_input """${version_code}""" version_code
+
+      echo Input the standard command for this install:
+      read std_cmd
+      __validate_input """${std_cmd}""" std_command
+
+      echo Input the mpi command for this install:
+      read mpi_cmd
+      __validate_input """${mpi_cmd}""" mpi_command
+
+      echo Input a description of analysis for the platform:
+      read description
+      __validate_input """${description}""" description
+   fi
+fi
+
+# Following the Win IBT convention
+isInteractive=false
+if [[ $code == *_ws_lnx ]]; then isInteractive=true; fi
+__validate_input """${isInteractive}""" isInteractive
+
+echo "Extracting env"
+env >$HOME/.CUR_ENV
+
+# work out of /enc/
+cp -r ${PROGRAM_ROOT}/${dir} /enc
+
+if [[ -z "${USE_MPI}" ]]; then
+   echo "No MPI bundle used, not copying to snapshot dir"
+else
+   echo "Copying MPI runtime bundle and wrappers"
+   # TODO: this is hard coded for intel right now, but can change
+   mkdir -p /enc/${dir}/intel/impi
+   mkdir -p /enc/${dir}/bin
+
+   cp -Lr ${MPI_BUNDLE_LOCATION} /enc/${dir}/intel/impi/
+   cp ${MPI_WRAPPER_LOCATION}/* /enc/${dir}/bin/
+fi
+
+echo "Archiving directory, this may take a bit..."
+pushd /enc >>/dev/null
+du -s ${dir} >$HOME/.PROGRAM_PATH_SIZE
+tar -cf ${dir}.tar.gz ${dir}
+mv "${dir}.tar.gz" ${HOME}/work
+popd >>/dev/null
+
+# Create an "untar" install script that will run through sxp-cli
+echo "mkdir -p ${PROGRAM_ROOT}/${dir}" >$HOME/work/install-from-session.sh
+echo "tar -xvf ${dir}.tar.gz" >>$HOME/work/install-from-session.sh
+echo "mv ${dir}/* ${PROGRAM_ROOT}/${dir}/" >>$HOME/work/install-from-session.sh
+
+# Collect sha sums of files that will be uploaded for install
+pushd ${HOME}/work >>/dev/null
+sha512sum "${dir}.tar.gz" >$HOME/.FILES_SHA512
+sha512sum "install-from-session.sh" >>$HOME/.FILES_SHA512
+popd >>/dev/null
+
+# print the command history to a readable file
+cat $HOME/.bash_history 2>/dev/null >>$HOME/work/command_history.txt
+history >>$HOME/work/command_history.txt
+
+# grep for yum installs
+cat $HOME/work/command_history.txt | grep "yum" | grep "install" >>$HOME/.YUM_INSTALLS
+
+# Run the python script to generate the settings JSON
+python ${DIR_NAME}/gen_env_json.py
+
+# create some plain text files with the commands needed to build
+echo "Congrats, you just installed some software, that wasn't so bad" >$HOME/work/instructions.txt
+echo "" >>$HOME/work/instructions.txt
+echo "To publish what you just did download the settings file created on this job: ${SETTINGS_FILE}" >>$HOME/work/instructions.txt
+echo "Activate the python environment you have set up for the SXP CLI and make sure you've set up the usual shortcuts" >>$HOME/work/instructions.txt
+echo "" >>$HOME/work/instructions.txt
+echo '  alias sxp="python sxp.py"' >>$HOME/work/instructions.txt
+echo "  export SXP_SETTINGS_FILE=${SETTINGS_FILE}" >>$HOME/work/instructions.txt
+echo "  export SXP_WAIT=true" >>$HOME/work/instructions.txt
+echo "" >>$HOME/work/instructions.txt
+echo "All you should then need to run is:" >>$HOME/work/instructions.txt
+echo "" >>$HOME/work/instructions.txt
+echo "  sxp clusters create" >>$HOME/work/instructions.txt
+echo "  sxp installs create --use-latest-cluster" >>$HOME/work/instructions.txt
+echo "  sxp packages create --use-latest-install" >>$HOME/work/instructions.txt
+echo "  sxp sw sync --use-latest-package" >>$HOME/work/instructions.txt
+echo "" >>$HOME/work/instructions.txt
+echo " Here your tile will be available in developer analysis versions and you yourself can use it." >>$HOME/work/instructions.txt
+echo "" >>$HOME/work/instructions.txt
+echo " To enable it in production, you need to publish it" >>$HOME/work/instructions.txt
+echo " sxp publish --visibility <private/public/requestable> --use-latest-software" >>$HOME/work/instructions.txt

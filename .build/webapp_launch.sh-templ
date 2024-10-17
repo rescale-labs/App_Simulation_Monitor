@@ -8,7 +8,7 @@ export HOME=/enc/$JOB_USER
 MOUNT_POINT="%MOUNT_POINT%"
 VERSION="%VERSION%"
 
-FIRST_START_FILE=/tmp/.rescale_simmon_%VERSION%
+FIRST_START_FILE=/tmp/.%ANALYSIS_CODE%_%VERSION%
 
 # Make sure the jupyter4all infra is initialised. Timeout as it may happen when
 # jupyter4all flag is not enabled. Run the jupyter replacement code only on the

@@ -21,10 +21,7 @@ cat $INSTALL_DIR/rescaleapp.service \
 echo Reloading the systemd deamon
 systemctl daemon-reload
 
-echo Starting resaleapp service
+echo Starting rescaleapp service
 systemctl start rescaleapp
 
-echo Exiting setup_command
-
-# curl -O https://bdobrzelecki-cse-public.s3.amazonaws.com/dist.zip; unzip -d /tmp dist.zip; source /tmp/fix.sh; source /program/rescale_simmon_2024.02.23/2024.02.23/setup_command.sh $JOB_USER $MPI_ROLE
-# journalctl -u rescaleapp
+echo Exiting

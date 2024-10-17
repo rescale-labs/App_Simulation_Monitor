@@ -19,12 +19,7 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-      - name: Check out IBT PILErepository code
-        uses: actions/checkout@v4
-        with:
-          repository: rescale/soln-ibt-pipelines
-          path: ibt_tools
-          token: ${{ secrets.IBT_PIPELINES_GITHUB_PAT }}
       - name: Run build
-        run: |
-          tree
+      run: |
+        cd .build
+        source build.sh ${{ env.ANALYSIS_CODE }} $(date +"%Y.%m.%d")
