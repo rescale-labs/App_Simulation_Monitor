@@ -1,18 +1,9 @@
 name: rescale_simmon_lnx Build
 run-name: ${{ github.actor }} is building Rescale Simulation Monitor
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to be deployed'
-        required: true
-      jira:
-        description: 'Create JIRA HPC task'
-        required: true
-        default: false
-        type: boolean
 env:
   ANALYSIS_CODE: rescale_simmon_lnx
+  RESCALE_API_KEY: ${{ secrets.RESCALE_API_KEY }}
 jobs:
   BUILD-RESCALE_SIMMON_LNX:
     runs-on: ubuntu-latest
@@ -20,6 +11,6 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
       - name: Run build
-      run: |
-        cd .build
-        source build.sh ${{ env.ANALYSIS_CODE }} $(date +"%Y.%m.%d")
+        run: |
+          cd .build
+          source build.sh ${{ env.ANALYSIS_CODE }} $(date +"%Y.%m.%d")
