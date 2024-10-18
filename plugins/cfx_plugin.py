@@ -131,7 +131,7 @@ def get_layout():
         fig = create_plot(mon_file, varrule)
 
         if fig:
-            return dcc.Loading(children=dcc.Graph(figure=fig, id="graph"), style={"display": "none"})
+            return dcc.Graph(figure=fig, id="graph")
         else:
             return html.Div(
                 [
