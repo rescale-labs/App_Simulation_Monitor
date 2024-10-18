@@ -1,4 +1,5 @@
 import glob
+import json
 import os
 import subprocess
 from io import StringIO
@@ -88,3 +89,44 @@ def create_plot(mon_file, varrule):
     fig.update_xaxes(range=[0.0, None], title=df.columns[0])
 
     return fig
+
+
+def get_varrule_choices():
+    """
+    Return possible choices for the 'varrule' command line parameter.
+    Extend the default choices by the values defined in the file ~/cfx_monitor.json if that file exists.
+    Example content for ~/cfx_monitor.json:
+    {"varrule_choices": ["CATEGORY = AAA, "CATEGORY = BBB"]}
+    """
+
+    choices = [
+        f"CATEGORY = {c}" for c in [
+            "COMBINED",
+            "FLOW",
+            "FORCE",
+            "IMBALANCE",
+            "MOMENT",
+            "RESIDUAL",
+            "SOURCE",
+            "USER POINT"
+        ]
+    ]
+
+    config_file = Path.home().joinpath('cfx_monitor.json')
+    if config_file.is_file():
+        with config_file.open('r') as file:
+            try:
+                data = json.load(file)
+            except json.decoder.JSONDecodeError:
+                data = {}
+        if ('varrule_choices' in data) and (isinstance(data['varrule_choices'], list)):
+            choices += data['varrule_choices']
+
+    choices = list(set(choices))
+    choices.sort()
+    return choices
+
+
+
+
+
