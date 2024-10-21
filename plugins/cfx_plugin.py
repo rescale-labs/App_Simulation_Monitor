@@ -4,7 +4,7 @@ import os
 import dash_bootstrap_components as dbc
 from dash import Input, Output, State, callback, dcc, html
 
-from plugins.cfx_utils import create_plot, find_mon_files
+from plugins.cfx_utils import create_plot, find_mon_files, get_varrule_choices
 from utils import is_debug
 
 logger = logging.getLogger(__name__)
@@ -68,6 +68,7 @@ def get_layout():
                  not found.
         """
 
+        varrule_choices = get_varrule_choices()
         mon_files = find_mon_files()
         if not mon_files:
             return html.Div(
@@ -93,11 +94,12 @@ def get_layout():
                     [
                         "Varrule to plot",
                         html.Br(),
-                        dcc.Input(
-                            id="varrule-input",
+                        dcc.Dropdown(
+                            id="varrule-dropdown",
+                            style={"width": "800px"},
+                            options=varrule_choices,
                             value="CATEGORY = USER POINT",
-                            type="text",
-                            style={"width": "400px"},
+                            clearable=False
                         ),
                     ],
                     style={"marginTop": 12},
@@ -114,7 +116,7 @@ def get_layout():
         [
             Input("button-reload", "n_clicks"),
             State("mon-dropdown", "value"),
-            State("varrule-input", "value"),
+            State("varrule-dropdown", "value"),
         ],
         prevent_initial_call=True,
     )
