@@ -1,5 +1,5 @@
 {
-    "name": "[build] ANSYS EMC Plus and Charge Plus %VERSION% LNX",
+    "name": "[build] %ANALYSIS_CODE% %VERSION% LNX",
     "jobanalyses": [
         {
             "analysis": {

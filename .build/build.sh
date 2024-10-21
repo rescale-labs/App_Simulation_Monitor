@@ -21,7 +21,7 @@ VERSION=$2
 MOUNT_POINT="/program/${ANALYSIS_CODE}_${VERSION}"
 SRC_DIR=".."
 
-instantiate_template bits_build.sh-templ 
+instantiate_template bits_build.sh-templ bits_build.sh
 instantiate_template submit.json-templ submit.json
 instantiate_template create_install_bits.spec-templ create_install_bits.spec
 instantiate_template webapp_launch.sh-templ webapp_launch.sh
