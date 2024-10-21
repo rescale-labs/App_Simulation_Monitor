@@ -5,7 +5,7 @@ on:
     inputs:
       share:
         description: 'Share job with HPC'
-        required: true
+        required: false
 env:
   ANALYSIS_CODE: rescale_simmon_lnx
   RESCALE_API_KEY: ${{ secrets.RESCALE_API_KEY }}
