@@ -1,7 +1,11 @@
 name: rescale_simmon_lnx Build
 run-name: ${{ github.actor }} is building Rescale Simulation Monitor
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      share:
+        description: 'Version to be deployed'
+        required: true
 env:
   ANALYSIS_CODE: rescale_simmon_lnx
   RESCALE_API_KEY: ${{ secrets.RESCALE_API_KEY }}
@@ -14,4 +18,4 @@ jobs:
       - name: Run build
         run: |
           cd .build
-          source build.sh ${{ env.ANALYSIS_CODE }} $(date +"%Y.%m.%d")
+          source build.sh ${{ env.ANALYSIS_CODE }} $(date +"%Y.%m.%d") ${{ inputs.share }}

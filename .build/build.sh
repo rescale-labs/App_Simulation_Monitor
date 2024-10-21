@@ -17,6 +17,7 @@ instantiate_template() {
 
 ANALYSIS_CODE=$1
 VERSION=$2
+SHARE_WITH_HPC=$3
 
 MOUNT_POINT="/program/${ANALYSIS_CODE}_${VERSION}"
 SRC_DIR=".."
@@ -34,6 +35,7 @@ rm -fr dist
 mkdir dist
 
 cp -R $SRC_DIR/*.py $SRC_DIR/requirements.txt $SRC_DIR/assets $SRC_DIR/plugins ${ANALYSIS_CODE}-pngThumbnail.png dist/
+cp _ibt_tools_lnx/* dist/
 mv bits_build.sh webapp_launch.sh create_install_bits.spec setup_command.sh rescaleapp.service dist/
 
 zip -r dist.zip dist/
@@ -96,4 +98,10 @@ if [[ $(echo $res | jq -r '.statusReason') != "Completed successfully" ]]; then
     exit 1
 fi
 
-rm submit.json dist.zip
+if [[ "$SHARE_WITH_HPC" == "true" && -n "$JOB_ID" ]]; then
+    # Share job
+    curl -X POST "https://platform.rescale.com/api/v3/jobs/${JOB_ID}/share/" \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Token ${RESCALE_API_KEY}" \
+        -d '{"account":"04-038224927","message":""}'
+fi

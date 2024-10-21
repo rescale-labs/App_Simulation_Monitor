@@ -1,15 +1,15 @@
+#!/bin/bash
+
 PYTHON_VERSION=3.11
 
-MOUNT_POINT="%MOUNT_POINT%"
-VERSION="%VERSION%"
-
-INSTALL_DIR=$MOUNT_POINT/$VERSION
-mkdir -p $INSTALL_DIR
+PROGRAM_PATH=%MOUNT_POINT%
+mkdir -p $PROGRAM_PATH
 source /etc/profile.d/greeting.sh
+set -e
 
 wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
-bash ~/miniconda.sh -b -p $INSTALL_DIR/miniconda
-eval "$(/${INSTALL_DIR}/miniconda/bin/conda shell.bash hook)"
+bash ~/miniconda.sh -b -p $PROGRAM_PATH/miniconda
+eval "$(/${PROGRAM_PATH}/miniconda/bin/conda shell.bash hook)"
 rm ~/miniconda.sh
 
 conda create -y --name RESCALE python=$PYTHON_VERSION
@@ -17,26 +17,12 @@ conda activate RESCALE
 
 pip install --upgrade pip
 
-if [ ! -d "dist" ]
-then
-    unzip dist.zip
-fi
-
-mv dist/%ANALYSIS_CODE%.png .
-
-cp -R dist/* $INSTALL_DIR
-pushd $INSTALL_DIR
+cp -R * $PROGRAM_PATH
+pushd $PROGRAM_PATH
+rm *install_bits* *-pngThumbnail.png
 pip install -r requirements.txt
 chmod a+x *.sh
 popd
 
-rm -fr dist* *-templ
-
-create_install_bits create_install_bits.spec << EOF
-%ANALYSIS_CODE%_%VERSION%
-EOF
-
-cd $HOME/work
-cp settings.json settings.json-orig
-jq '.software.pngThumbnail = "%ANALYSIS_CODE%.png"' settings.json-orig > settings.json
-rm settings.json-orig
+./create_install_bits ./create_install_bits.spec
+cp %ANALYSIS_CODE%-pngThumbnail.png ~/work
