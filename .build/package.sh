@@ -1,19 +1,6 @@
 #!/bin/bash
 
-# Using templates makes it easier to publish new versions without touching multiple files.
-instantiate_template() {
-    template_file=$1
-    instance_file=$2
-
-    cat $template_file |
-        sed "s|%VERSION%|$VERSION|g" |
-        sed "s|%MOUNT_POINT%|$MOUNT_POINT|g" |
-        sed "s|%ANALYSIS_CODE%|$ANALYSIS_CODE|g" |
-        sed "s|%FILE_ID%|$FILE_ID|g" |
-        sed "s|%JOB_ID%|$JOB_ID|g" |
-        sed "s|%FULLY_SCOPED_DATE%|$FULLY_SCOPED_DATE|g" \
-            > $instance_file
-}
+. shared.sh
 
 ANALYSIS_CODE=$1
 VERSION=$2
@@ -22,6 +9,7 @@ DIST_PATH=$3
 MOUNT_POINT="/program/${ANALYSIS_CODE}_${VERSION}"
 SRC_DIR=".."
 
+# Using templates makes it easier to publish new versions without touching multiple files.
 instantiate_template bits_build.sh-templ bits_build.sh
 instantiate_template submit.json-templ submit.json
 instantiate_template create_install_bits.spec-templ create_install_bits.spec
