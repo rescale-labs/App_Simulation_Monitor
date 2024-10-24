@@ -24,12 +24,12 @@ jobs:
         run: |
           cd .build
           mkdir output
-          source package.sh ${{ env.ANALYSIS_CODE }} $VERSION "output/dist.zip"
+          source package.sh ${{ env.ANALYSIS_CODE }} ${{ env.VERSION }} "output/dist.zip"
 
       - name: Extract release notes
         id: extract_notes
         run: |
-          notes=$(awk -v ver=$VERSION '
+          notes=$(awk -v ver=${{ env.VERSION }} '
             /^## Version / { if (p) { exit }; if ($3 == ver) { p=1; next } } p
           ' CHANGELOG.md)
           {
@@ -44,8 +44,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: $VERSION
-          release_name: Release $VERSION
+          tag_name: ${{ env.VERSION }}
+          release_name: Release ${{ env.VERSION }}
           body: ${{ env.RELEASE_NOTES }}
           draft: false
           prerelease: false
@@ -58,10 +58,10 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: .build/output/dist.zip
-          asset_name: ${{ env.ANALYSIS_CODE }}_$VERSION.zip
+          asset_name: ${{ env.ANALYSIS_CODE }}_${{ env.VERSION }}.zip
           asset_content_type: application/zip
 
       - name: Build on Rescale
         run: |
           cd .build
-          source deploy.sh "output/dist.zip"
+          source deploy.sh "output/dist.zip" true
