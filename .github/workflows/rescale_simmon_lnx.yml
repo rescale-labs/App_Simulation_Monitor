@@ -41,7 +41,7 @@ jobs:
         with:
           tag_name: ${{ env.VERSION }}
           release_name: Release ${{ env.VERSION }}
-          body_path: ./release_notes.md
+          bodyFile: release_notes.md
           draft: false
           prerelease: false
 
