@@ -4,23 +4,24 @@ on:
   push:
     tags:
       - 'v*'
-    branches:
-      - main
 env:
   ANALYSIS_CODE: rescale_simmon_lnx
   RESCALE_API_KEY: ${{ secrets.RESCALE_API_KEY }}
+  DIST_DIR: output
+  DIST_FILE: dist.zip
 jobs:
   build-publish-deploy:
     runs-on: ubuntu-latest
     steps:
-      
+
       - name: Check out repository code
         uses: actions/checkout@v4
 
       - name: Build release
         run: |
           cd .build
-          source package.sh ${{ env.ANALYSIS_CODE }} ${{ github.ref }}
+          mkdir ${{ env.DIST_DIR }}
+          source package.sh ${{ env.ANALYSIS_CODE }} ${{ github.ref }} "${{ env.DIST_DIR }}/${{ env.DIST_FILE }}"
 
       - name: Extract release notes
         id: extract_notes
@@ -32,7 +33,11 @@ jobs:
             }
             found { print }
           ' CHANGELOG.md)
-          echo "::set-output name=notes::$notes"
+          {
+            echo 'NOTES<<EOF'
+            echo $notes
+            echo EOF
+          } >> "$GITHUB_ENV"
 
       - name: Create Release
         id: create_release
@@ -42,7 +47,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          body: ${{ steps.extract_notes.outputs.notes }}
+          body: $NOTES
           draft: false
           prerelease: false
 
@@ -53,11 +58,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ~/build/dist.zip
+          asset_path: ${{ env.OUTPUT_DIR }}/dist.zip
           asset_name: ${{ env.ANALYSIS_CODE }}_${{ github.ref }}.zip
           asset_content_type: application/zip
 
       - name: Build on Rescale
         run: |
           cd .build
-          source package.sh ${{ env.ANALYSIS_CODE }} ${{ github.ref }}
+          source deploy.sh ${{ env.ANALYSIS_CODE }} ${{ github.ref }}

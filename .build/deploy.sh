@@ -1,9 +1,12 @@
+DIST_PATH=$1
+SHARE_WITH_HPC=$2
+
 echo "Uploading inputs..."
 FILE_ID=$(
     curl -s -X POST \
         -H "Content-Type:multipart/form-data" \
         -H "Authorization: Token ${RESCALE_API_KEY}" \
-        -F "file=@dist.zip" \
+        -F "file=@${DIST_PATH}" \
         https://platform.rescale.com/api/v2/files/contents/ |
         jq -r ".id"
 )
