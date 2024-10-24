@@ -34,7 +34,7 @@ jobs:
             found { print }
           ' CHANGELOG.md)
           {
-            echo 'NOTES<<EOF'
+            echo 'RELEASE_NOTES<<EOF'
             echo $notes
             echo EOF
           } >> "$GITHUB_ENV"
@@ -47,7 +47,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          body: $NOTES
+          body: ${{ env.RELEASE_NOTES }}
           draft: false
           prerelease: false
 
