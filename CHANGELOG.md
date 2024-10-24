@@ -1,4 +1,4 @@
-## Version 2024.10.22-4
+## Version v2024.10.22-4
 
 ### Added
 
@@ -8,7 +8,7 @@
 
 - Simulation Utilities are now automatically released from the Github Action.
 
-## Version 2024.10.22
+## Version v2024.10.22
 
 ### Added
 

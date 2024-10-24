@@ -18,7 +18,7 @@ jobs:
       - name: Build release
         run: |
           cd .build
-          mkdir ouput
+          mkdir output
           source package.sh ${{ env.ANALYSIS_CODE }} ${{ github.ref }} "output/dist.zip"
 
       - name: Extract release notes
