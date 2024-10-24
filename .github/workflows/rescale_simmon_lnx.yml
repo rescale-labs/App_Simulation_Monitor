@@ -1,21 +1,63 @@
-name: rescale_simmon_lnx Build
-run-name: ${{ github.actor }} is building Rescale Simulation Monitor
+name: rescale_simmon_lnx build-publish-deploy
+run-name: ${{ github.actor }} is deploying Rescale Simulation Monitor
 on:
-  workflow_dispatch:
-    inputs:
-      share:
-        description: 'Share job with HPC'
-        required: false
+  push:
+    tags:
+      - 'v*'
+    branches:
+      - main
 env:
   ANALYSIS_CODE: rescale_simmon_lnx
   RESCALE_API_KEY: ${{ secrets.RESCALE_API_KEY }}
 jobs:
-  BUILD-RESCALE_SIMMON_LNX:
+  build-publish-deploy:
     runs-on: ubuntu-latest
     steps:
+      
       - name: Check out repository code
         uses: actions/checkout@v4
-      - name: Run build
+
+      - name: Build release
         run: |
           cd .build
-          source build.sh ${{ env.ANALYSIS_CODE }} $(date +"%Y.%m.%d") ${{ inputs.share }}
+          source package.sh ${{ env.ANALYSIS_CODE }} ${{ github.ref }}
+
+      - name: Extract release notes
+        id: extract_notes
+        run: |
+          notes=$(awk '
+            /^## \[v[0-9]+\.[0-9]+\.[0-9]+\]/ {
+              if (found) exit
+              found = 1
+            }
+            found { print }
+          ' CHANGELOG.md)
+          echo "::set-output name=notes::$notes"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: ${{ steps.extract_notes.outputs.notes }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ~/build/dist.zip
+          asset_name: ${{ env.ANALYSIS_CODE }}_${{ github.ref }}.zip
+          asset_content_type: application/zip
+
+      - name: Build on Rescale
+        run: |
+          cd .build
+          source package.sh ${{ env.ANALYSIS_CODE }} ${{ github.ref }}
