@@ -8,7 +8,7 @@ def get_columns(df):
         return df.columns.to_list()
 
 
-def create_plot(df, x_axis_value, y_axis_values):
+def create_plot(df, x_axis_value, y_axis_values, x_scale, y_scale):
     fig = go.Figure()
 
     for y_col in y_axis_values:
@@ -20,8 +20,8 @@ def create_plot(df, x_axis_value, y_axis_values):
 
     fig.update_layout(
         title=f'Plot: {", ".join(y_axis_values)} vs. {x_axis_value}',
-        xaxis=dict(title=x_axis_value),
-        yaxis=dict(title="Value"),
+        xaxis=dict(title=x_axis_value, type=x_scale),
+        yaxis=dict(title="Value", type=y_scale),
     )
 
     return fig

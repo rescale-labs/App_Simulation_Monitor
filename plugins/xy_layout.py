@@ -97,6 +97,18 @@ def get_layout(get_df, analysis_name):
                 id="interactive-plot-div",
                 style={"marginTop": 12},
             ),
+            dcc.Checklist(
+                id="x-scale-switch",
+                options=[{"label": "X-Log", "value": "log"}],
+                value=[],
+                labelStyle={"display": "inline-block"},
+            ),
+            dcc.Checklist(
+                id="y-scale-switch",
+                options=[{"label": "Y-Log", "value": "log"}],
+                value=[],
+                labelStyle={"display": "inline-block"},
+            ),
         ]
     )
 
@@ -105,6 +117,8 @@ def get_layout(get_df, analysis_name):
         Input("add-plot-button", "n_clicks"),
         Input("clear-plots-button", "n_clicks"),
         Input("refresh-button", "n_clicks"),
+        Input('x-scale-switch', 'value'),
+        Input('y-scale-switch', 'value'),
         State("x-axis-selector", "value"),
         State("y-axis-selector", "value"),
         prevent_initial_call=True,
@@ -113,12 +127,28 @@ def get_layout(get_df, analysis_name):
         plot_button_clicks,
         clear_button_clicks,
         refresh_button_clicks,
+        x_scale_switch,
+        y_scale_switch,
         x_axis_value,
         y_axis_values,
     ):
         button_id = ctx.triggered_id
         logger.debug(f"Triggered: {button_id}")
 
+        x_scale = 'linear'
+        y_scale = 'linear'
+
+        if button_id == 'x-scale-switch' and len(x_scale_switch) > 0:
+            x_scale = 'log'
+        elif button_id == 'x-scale-switch':
+            x_scale = 'linear'
+
+        if button_id == 'y-scale-switch' and len(y_scale_switch) > 0:
+            y_scale = 'log'
+        elif button_id == 'x-scale-switch':
+            y_scale = 'linear'
+
+            
         if button_id == "clear-plots-button":
             return ""
         elif x_axis_value is None or not y_axis_values:
@@ -127,7 +157,7 @@ def get_layout(get_df, analysis_name):
                 style={"background": "yellow"},
             )
         else:
-            return dcc.Graph(figure=create_plot(get_df(), x_axis_value, y_axis_values))
+            return dcc.Graph(figure=create_plot(get_df(), x_axis_value, y_axis_values, x_scale, y_scale))
 
     @callback(
         Output("axes-selectors-div", "children"),

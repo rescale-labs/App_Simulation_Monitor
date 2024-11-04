@@ -9,14 +9,15 @@ def is_debug():
     """
     gettrace = getattr(sys, "gettrace", None)
 
-    if gettrace is None:
-        return False
-    else:
-        v = gettrace()
-        if v is None:
-            return False
-        else:
+    v = gettrace()
+    if v is None:
+        is_debug = os.getenv("DEBUG", "false")
+        if is_debug == "true" or is_debug == 1:
             return True
+        else:
+            return False
+    else:
+        return True
 
 
 def find_file(file_glob, root_dir):
