@@ -135,20 +135,16 @@ def get_layout(get_df, analysis_name):
         button_id = ctx.triggered_id
         logger.debug(f"Triggered: {button_id}")
 
-        x_scale = 'linear'
-        y_scale = 'linear'
-
-        if button_id == 'x-scale-switch' and len(x_scale_switch) > 0:
+        if 'log' in x_scale_switch:
             x_scale = 'log'
-        elif button_id == 'x-scale-switch':
+        else:
             x_scale = 'linear'
 
-        if button_id == 'y-scale-switch' and len(y_scale_switch) > 0:
+        if 'log' in y_scale_switch:
             y_scale = 'log'
-        elif button_id == 'x-scale-switch':
+        else:
             y_scale = 'linear'
 
-            
         if button_id == "clear-plots-button":
             return ""
         elif x_axis_value is None or not y_axis_values:
