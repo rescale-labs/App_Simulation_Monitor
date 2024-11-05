@@ -8,6 +8,10 @@ from plugins.xy_utils import create_plot, get_columns
 logger = logging.getLogger(__name__)
 
 
+HIDDEN = {"display": "none"}
+VISIBLE = {"display": "block"}
+
+
 def get_axes_selector_children(columns):
     return [
         dcc.Dropdown(
@@ -29,13 +33,13 @@ def get_axes_selector_children(columns):
         html.Div(
             [
                 dbc.Button(
-                    "Add Plot",
+                    "Plot",
                     id="add-plot-button",
                     n_clicks=0,
                     style={"marginRight": 6},
                 ),
                 dbc.Button(
-                    "Clear All Plots",
+                    "Clear All",
                     id="clear-plots-button",
                     n_clicks=0,
                     style={"marginRight": 6},
@@ -102,23 +106,33 @@ def get_layout(get_df, analysis_name):
                 options=[{"label": "X-Log", "value": "log"}],
                 value=[],
                 labelStyle={"display": "inline-block"},
+                style=HIDDEN,
             ),
             dcc.Checklist(
                 id="y-scale-switch",
                 options=[{"label": "Y-Log", "value": "log"}],
                 value=[],
                 labelStyle={"display": "inline-block"},
+                style=HIDDEN,
             ),
         ]
     )
 
     @callback(
-        Output("interactive-plot-div", "children"),
+        [
+            Output("interactive-plot-div", "children"),
+            Output("x-axis-selector", "value"),
+            Output("y-axis-selector", "value"),
+            Output("x-scale-switch", "value"),
+            Output("y-scale-switch", "value"),
+            Output("x-scale-switch", "style"),
+            Output("y-scale-switch", "style"),
+        ],
         Input("add-plot-button", "n_clicks"),
         Input("clear-plots-button", "n_clicks"),
         Input("refresh-button", "n_clicks"),
-        Input('x-scale-switch', 'value'),
-        Input('y-scale-switch', 'value'),
+        Input("x-scale-switch", "value"),
+        Input("y-scale-switch", "value"),
         State("x-axis-selector", "value"),
         State("y-axis-selector", "value"),
         prevent_initial_call=True,
@@ -135,25 +149,46 @@ def get_layout(get_df, analysis_name):
         button_id = ctx.triggered_id
         logger.debug(f"Triggered: {button_id}")
 
-        if 'log' in x_scale_switch:
-            x_scale = 'log'
+        if "log" in x_scale_switch:
+            x_scale = "log"
         else:
-            x_scale = 'linear'
+            x_scale = "linear"
 
-        if 'log' in y_scale_switch:
-            y_scale = 'log'
+        if "log" in y_scale_switch:
+            y_scale = "log"
         else:
-            y_scale = 'linear'
+            y_scale = "linear"
 
         if button_id == "clear-plots-button":
-            return ""
+            return "", None, [], [], [], HIDDEN, HIDDEN
+
         elif x_axis_value is None or not y_axis_values:
-            return html.P(
-                "Select X, Y axes.",
-                style={"background": "yellow"},
+            return (
+                html.P(
+                    "Select X, Y axes.",
+                    style={"background": "yellow"},
+                ),
+                x_axis_value,
+                y_axis_values,
+                x_scale_switch,
+                y_scale_switch,
+                VISIBLE,
+                VISIBLE,
             )
         else:
-            return dcc.Graph(figure=create_plot(get_df(), x_axis_value, y_axis_values, x_scale, y_scale))
+            return (
+                dcc.Graph(
+                    figure=create_plot(
+                        get_df(), x_axis_value, y_axis_values, x_scale, y_scale
+                    )
+                ),
+                x_axis_value,
+                y_axis_values,
+                x_scale_switch,
+                y_scale_switch,
+                VISIBLE,
+                VISIBLE,
+            )
 
     @callback(
         Output("axes-selectors-div", "children"),

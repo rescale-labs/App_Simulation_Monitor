@@ -6,15 +6,12 @@ JOB_USER=$1
 MPI_ROLE=$2
 
 MOUNT_POINT="%MOUNT_POINT%"
-VERSION="%VERSION%"
-
-INSTALL_DIR=$MOUNT_POINT/$VERSION
 
 # Launch only on head node
 if [ "$MPI_ROLE" == "MPI_SLAVE" ]; then exit 0; fi
 
 echo Instantiating the service configuration file
-cat $INSTALL_DIR/rescaleapp.service \
+cat $MOUNT_POINT/rescaleapp.service \
     | sed -e "s|%JOB_USER%|$JOB_USER|g" -e "s|%MPI_ROLE%|$MPI_ROLE|g" \
     > /etc/systemd/system/rescaleapp.service
 

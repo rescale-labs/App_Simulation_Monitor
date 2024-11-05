@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. shared.sh
+source shared.sh
 
 ANALYSIS_CODE=$1
 VERSION=$2

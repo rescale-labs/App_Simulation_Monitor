@@ -7,7 +7,7 @@ Type=simple
 Restart=always
 RestartSec=1
 User=%JOB_USER%
-ExecStart=%MOUNT_POINT%/%VERSION%/webapp_launch.sh %JOB_USER% %MPI_ROLE%
+ExecStart=%MOUNT_POINT%/webapp_launch.sh %JOB_USER% %MPI_ROLE%
 
 [Install]
 WantedBy=multi-user.target
