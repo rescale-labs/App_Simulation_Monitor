@@ -125,8 +125,3 @@ def get_varrule_choices():
     choices = list(set(choices))
     choices.sort()
     return choices
-
-
-
-
-

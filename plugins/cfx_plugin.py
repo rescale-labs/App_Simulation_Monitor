@@ -15,7 +15,7 @@ def is_applicable():
     All plugins need to implement this function. The applicability logic can be
     based on input files, analysis command, job definition, etc.
 
-    Simplictic implementation relies on existence of a specific exacutable
+    Simplistic implementation relies on existence of a specific exactable
     call in the process_output.log
 
     :returns True if monitoring is applicable, False otherwise

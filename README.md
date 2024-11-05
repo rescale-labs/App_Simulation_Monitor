@@ -122,21 +122,52 @@ Currently, by convention we look for the local test files by detecting the
 _local_ context. For example the `fluent_utils.py#get_df()` will eater look for
 files in the cluster filesystem, or load file from the local `test/` directory.
 
-The generic `xy_layout.py` will allow user to select any column in the provided
-DataFrame for x or y axis of the plot.
+To add new plugin, a new `*_plugin.py` module needs to be developed and stored
+in the `plugins/` directory. The plugin needs to provide two functions:
+
+* `is_applicable()` - which checks whether a plugin is applicable in the Job context
+* `get_layout()` - which returns a [Dash](https://dash.plotly.com/) layout
+  component (our examples use [Dash Bootstrap
+  Components](https://dash-bootstrap-components.opensource.faculty.ai/))
+
+Most of the webapp generation is abstracted away in generic XY layout (see
+[`xy_layout.py`](plugins/xy_layout.py) and
+[`xy_utils.py`](plugins/xy_utils.py)). The main work is to write code that will
+find a file to parse and write a parser that will output a
+[DataFrame](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html)
+with columns that can be selected as X,Y axes (see
+[`fluent_utils.py`](plugins/fluent_utils.py)).
+
+Some tools will require calling an external command to generate parsable status
+files (see CFX plugin).
 
 The above description applies to plugins using the generic `xy_layout.py`
 implementation. CFX plugin is a custom implementation, which uses similar
-techniques to enable local testing. 
+techniques.
 
 ## What next?
 
-Contribute! The modular design of the Simulation Monitoring application allows for independent plug-in development. If the solver you're using is currently unsupported, and you know how to extract progress data (either via a tool or by parsing output files) – copy one of the sample modules and tune it to your needs. Get in touch with us at support@rescale.com to become a contributor.
+Contribute! The modular design of the Simulation Monitoring application allows
+for independent plug-in development. If the solver you're using is currently
+unsupported, and you know how to extract progress data (either via a tool or by
+parsing output files) – copy one of the sample modules and tune it to your
+needs. Get in touch with us at support@rescale.com to become a contributor.
 
 ## About authors and Rescale
 
-[Rescale™](https://rescale.com) is a technology company that builds cloud software and services that enable organizations of every size to deliver engineering and scientific breakthroughs that enrich humanity.
+[Rescale™](https://rescale.com) is a technology company that builds cloud
+software and services that enable organizations of every size to deliver
+engineering and scientific breakthroughs that enrich humanity.
 
-[Robert Bitsche](https://www.linkedin.com/in/robertbitsche/) is a Senior Customer Success Engineer at Rescale with a background in mechanical engineering, numerical simulation, and renewable energy. Robert believes that engineering can create a better world. He also believes that the function of an expert is not to be more right than other people, but to be wrong for more sophisticated reasons.
+[Robert Bitsche](https://www.linkedin.com/in/robertbitsche/) is a Senior
+Customer Success Engineer at Rescale with a background in mechanical
+engineering, numerical simulation, and renewable energy. Robert believes that
+engineering can create a better world. He also believes that the function of an
+expert is not to be more right than other people, but to be wrong for more
+sophisticated reasons.
 
-[Bartek Dobrzelecki](https://linkedin.com/in/bardobrze) is a Senior Customer Success Engineer at Rescale with a background in High Performance Computing and Software Engineering. He is always keen to share his knowledge, demystify technology and democratize computational thinking. He strongly believes that no technology should be indistinguishable from magic.
+[Bartek Dobrzelecki](https://linkedin.com/in/bardobrze) is a Senior Customer
+Success Engineer at Rescale with a background in High Performance Computing and
+Software Engineering. He is always keen to share his knowledge, demystify
+technology and democratize computational thinking. He strongly believes that no
+technology should be indistinguishable from magic.
