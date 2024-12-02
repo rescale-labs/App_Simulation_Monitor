@@ -29,9 +29,9 @@ jobs:
       - name: Extract release notes
         id: extract_notes
         run: |
-          notes=$(awk -v ver=${{ env.VERSION }} '
+          awk -v ver=${{ env.VERSION }} '
             /^## Version / { if (p) { exit }; if ($3 == ver) { p=1; next } } p
-          ' CHANGELOG.md | sed 's/*/\\*/g') > release_notes.md
+          ' CHANGELOG.md | sed 's/*/\\*/g' > release_notes.md
 
       - name: Create Release
         id: create_release

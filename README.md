@@ -171,3 +171,11 @@ Success Engineer at Rescale with a background in High Performance Computing and
 Software Engineering. He is always keen to share his knowledge, demystify
 technology and democratize computational thinking. He strongly believes that no
 technology should be indistinguishable from magic.
+
+[Sushanth Madabushi
+Venugopal](https://www.linkedin.com/in/sushanth-madabushi-venugopal-aaab9485/)
+is a Customer Success Engineer at Rescale with a background in Aerospace
+Engineering , Numerical Methods and HPC. Sushanth is passionate about harnessing
+cloud technology to transform engineering workflows, enabling accelerated
+innovation across industries. He believes that true expertise lies in distilling
+complexity, ensuring that technology empowers rather than mystifies.

@@ -27,4 +27,4 @@ cp _ibt_tools_lnx/* dist/
 mv bits_build.sh webapp_launch.sh create_install_bits.spec setup_command.sh rescaleapp.service dist/
 
 zip -r $DIST_PATH dist/
-ls -al $DIST_PATH
+rm -fr dist/

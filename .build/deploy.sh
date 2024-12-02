@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. shared.sh
+source shared.sh
 
 DIST_PATH=$1
 SHARE_WITH_HPC=$2
