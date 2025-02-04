@@ -67,7 +67,8 @@ def find_layout():
         logger.debug("Running with debugger attached.")
 
         # Import the plugin you want to test when developing locally
-        from plugins.starccm_plugin import get_layout, is_applicable
+#        from plugins.starccm_plugin import get_layout, is_applicable
+        from plugins.icepak_plugin import get_layout, is_applicable
 
         if is_applicable():
             layout = get_layout()
