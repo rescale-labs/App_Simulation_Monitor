@@ -1,5 +1,6 @@
 import os
 import re
+import logging
 
 import pandas as pd
 
@@ -184,42 +185,45 @@ def make_combined_df(dict_monfiles):
     # Loop over each monitor file path in the dictionary
     for monitor_name, file_path in dict_monfiles.items():
         if file_path:
-            try:
-                # Parse the MON file into a DataFrame
-                df = parse_monfile_precise(file_path)
+            # Parse the MON file into a DataFrame
+            df = parse_monfile_precise(file_path)
+            
+            # If it's the "Residual" monitor, merge without changing column names
+            if monitor_name == "Residual":
+                df_residual = df.copy()
                 
-                # If it's the "Residual" monitor, merge without changing column names
-                if monitor_name == "Residual":
-                    df_residual = df.copy()
-                    
-                    if df_monfiles_total is None:
-                        df_monfiles_total = df_residual
-                    else:
-                        df_monfiles_total = pd.merge(df_monfiles_total, df_residual, on='Iteration', how='outer')
+                if df_monfiles_total is None:
+                    df_monfiles_total = df_residual
                 else:
-                    # Rename the second column with the monitor name to avoid duplicate column names
-                    df_non_residual = df.copy()
-                    df_non_residual.rename(columns={df.columns[1]: f"{df.columns[1]}-{monitor_name}"}, inplace=True)
-                    
-                    # Merge with the existing DataFrame
-                    df_monfiles_total = pd.merge(df_monfiles_total, df_non_residual, on='Iteration', how='outer')
-                    
-            except Exception as e:
-                print(f"Check the error: {e}")
+                    df_monfiles_total = pd.merge(df_monfiles_total, df_residual, on='Iteration', how='outer')
+            else:
+                # Rename the second column with the monitor name to avoid duplicate column names
+                df_non_residual = df.copy()
+                df_non_residual.rename(columns={df.columns[1]: f"{df.columns[1]}-{monitor_name}"}, inplace=True)
+                
+                # Merge with the existing DataFrame
+                df_monfiles_total = pd.merge(df_monfiles_total, df_non_residual, on='Iteration', how='outer')
     
     return df_monfiles_total
 
 
 def get_df():
-    if is_debug():
-        base_dir = os.getcwd()
-        file_dir = os.path.join(base_dir, "tests")
-        dict_monfiles = process_aedt_and_monitor_data(file_dir)
-    else:
-        base_dir = os.path.expanduser("~")
-        working_dir = os.path.join(base_dir, "work")
-        dict_monfiles = process_aedt_and_monitor_data(working_dir)
+    
+    logging.basicConfig(level=logging.DEBUG)
+    
+    try:
+        if is_debug():
+            base_dir = os.getcwd()
+            file_dir = os.path.join(base_dir, "tests")
+            dict_monfiles = process_aedt_and_monitor_data(file_dir)
+        else:
+            base_dir = os.path.expanduser("~")
+            working_dir = os.path.join(base_dir, "work")
+            dict_monfiles = process_aedt_and_monitor_data(working_dir)
 
-    df_monfiles_total = make_combined_df(dict_monfiles)
+        df_monfiles_total = make_combined_df(dict_monfiles)
+    except Exception as e:
+        logging.debug(e)
+        return pd.DataFrame()
 
     return df_monfiles_total
