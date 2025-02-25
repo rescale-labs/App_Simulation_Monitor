@@ -1,3 +1,7 @@
+## Version v2025.02.25
+
+- Added Icepak monitoring.
+
 ## Version v2024.11.05
 
 - Added toggles for linear/log scales.

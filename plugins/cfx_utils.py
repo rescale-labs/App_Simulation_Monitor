@@ -100,7 +100,8 @@ def get_varrule_choices():
     """
 
     choices = [
-        f"CATEGORY = {c}" for c in [
+        f"CATEGORY = {c}"
+        for c in [
             "COMBINED",
             "FLOW",
             "FORCE",
@@ -108,19 +109,19 @@ def get_varrule_choices():
             "MOMENT",
             "RESIDUAL",
             "SOURCE",
-            "USER POINT"
+            "USER POINT",
         ]
     ]
 
-    config_file = Path.home().joinpath('cfx_monitor.json')
+    config_file = Path.home().joinpath("cfx_monitor.json")
     if config_file.is_file():
-        with config_file.open('r') as file:
+        with config_file.open("r") as file:
             try:
                 data = json.load(file)
             except json.decoder.JSONDecodeError:
                 data = {}
-        if ('varrule_choices' in data) and (isinstance(data['varrule_choices'], list)):
-            choices += data['varrule_choices']
+        if ("varrule_choices" in data) and (isinstance(data["varrule_choices"], list)):
+            choices += data["varrule_choices"]
 
     choices = list(set(choices))
     choices.sort()

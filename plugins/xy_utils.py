@@ -19,7 +19,7 @@ def create_plot(df, x_axis_value, y_axis_values, x_scale, y_scale):
         )
 
     fig.update_layout(
-        title=f'Plot: {", ".join(y_axis_values)} vs. {x_axis_value}',
+        title=f"Plot: {', '.join(y_axis_values)} vs. {x_axis_value}",
         xaxis=dict(title=x_axis_value, type=x_scale),
         yaxis=dict(title="Value", type=y_scale),
     )

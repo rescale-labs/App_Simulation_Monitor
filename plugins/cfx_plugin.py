@@ -99,7 +99,7 @@ def get_layout():
                             style={"width": "800px"},
                             options=varrule_choices,
                             value="CATEGORY = USER POINT",
-                            clearable=False
+                            clearable=False,
                         ),
                     ],
                     style={"marginTop": 12},

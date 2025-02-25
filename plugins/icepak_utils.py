@@ -1,6 +1,6 @@
+import logging
 import os
 import re
-import logging
 
 import pandas as pd
 
@@ -24,7 +24,14 @@ def process_aedt_and_monitor_data(working_dir):
     """
 
     # Step 1: Find the .aedt file within the working directory
-    aedtfile_path = next((os.path.join(working_dir, f) for f in os.listdir(working_dir) if f.endswith(".aedt")), None)
+    aedtfile_path = next(
+        (
+            os.path.join(working_dir, f)
+            for f in os.listdir(working_dir)
+            if f.endswith(".aedt")
+        ),
+        None,
+    )
 
     # If no .aedt file is found, raise an error
     if not aedtfile_path:
@@ -34,23 +41,32 @@ def process_aedt_and_monitor_data(working_dir):
     aedtfile_name = os.path.splitext(os.path.basename(aedtfile_path))[0]
 
     # Set path to the corresponding monitor files directory
-    path_monfiles = os.path.join(working_dir, f"{aedtfile_name}.aedtresults", "IcepakDesign1.results")
+    path_monfiles = os.path.join(
+        working_dir, f"{aedtfile_name}.aedtresults", "IcepakDesign1.results"
+    )
 
     # Step 2: Extract monitor data from the .aedt file
-    with open(aedtfile_path, 'r', encoding='latin1') as file:
+    with open(aedtfile_path, "r", encoding="latin1") as file:
         data = file.read()
 
     # Regular expression to capture the monitor block and its contents
     monitor_match = re.search(
-        r"\$begin 'Monitor'\s*\$begin 'IcepakMonitors'(.*?)\$end 'IcepakMonitors'\s*\$end 'Monitor'", data, re.DOTALL)
+        r"\$begin 'Monitor'\s*\$begin 'IcepakMonitors'(.*?)\$end 'IcepakMonitors'\s*\$end 'Monitor'",
+        data,
+        re.DOTALL,
+    )
 
     # Raise error if the monitor block is not found
     if not monitor_match:
         raise ValueError("Monitor block or IcepakMonitors block not found in the file.")
 
     # Extract monitor points and their corresponding IDs from the monitor block
-    monitor_items = {block.group(1): int(re.search(r"ID=(\d+)", block.group(2)).group(1))
-                     for block in re.finditer(r"\$begin '(.*?)'(.*?)\$end '\1'", monitor_match.group(1), re.DOTALL)}
+    monitor_items = {
+        block.group(1): int(re.search(r"ID=(\d+)", block.group(2)).group(1))
+        for block in re.finditer(
+            r"\$begin '(.*?)'(.*?)\$end '\1'", monitor_match.group(1), re.DOTALL
+        )
+    }
 
     # Add "Residual" entry to the monitor items dictionary
     monitor_items = {"Residual": 0, **monitor_items}
@@ -60,20 +76,34 @@ def process_aedt_and_monitor_data(working_dir):
         raise FileNotFoundError(f"The specified path does not exist: {path_monfiles}")
 
     # List all the .sd files that match the required pattern
-    list_monfiles = [os.path.join(path_monfiles, f) for f in os.listdir(path_monfiles)
-                     if re.match(r"DV\d+_S\d+_MON\d+_V\d+\.sd", f)]
+    list_monfiles = [
+        os.path.join(path_monfiles, f)
+        for f in os.listdir(path_monfiles)
+        if re.match(r"DV\d+_S\d+_MON\d+_V\d+\.sd", f)
+    ]
 
     if not list_monfiles:
         raise FileNotFoundError(
-            "No matching .sd files found. Pre-processing is in progress, Please try again after 30 mins.")
+            "No matching .sd files found. Pre-processing is in progress, Please try again after 30 mins."
+        )
 
     # Step 4: Map monitor points to matching .sd files using a regex pattern
     file_pattern = re.compile(r"DV\d+_S\d+_MON(\d+)_V\d+\.sd")
 
     # Create a dictionary of monitor points and their matching .sd files
-    dict_monfiles = {key: next((file for file in list_monfiles if file_pattern.match(os.path.basename(file)) and
-                                int(file_pattern.match(os.path.basename(file)).group(1)) == monitor_items[key]), None)
-                     for key in monitor_items}
+    dict_monfiles = {
+        key: next(
+            (
+                file
+                for file in list_monfiles
+                if file_pattern.match(os.path.basename(file))
+                and int(file_pattern.match(os.path.basename(file)).group(1))
+                == monitor_items[key]
+            ),
+            None,
+        )
+        for key in monitor_items
+    }
 
     return dict_monfiles
 
@@ -93,7 +123,7 @@ def parse_monfile_precise(file_path):
     data = {"Iteration": []}
 
     # Open the MON file and parse its content line by line
-    with open(file_path, 'r') as file:
+    with open(file_path, "r") as file:
         for line in file:
             # Remove leading and trailing whitespaces
             line = line.strip()
@@ -109,7 +139,9 @@ def parse_monfile_precise(file_path):
             # Extract variables from the rest of the line, e.g., "VariableName(Value)"
             if len(parts) > 1:
                 rest = parts[1]
-                matches = re.findall(r"(\w+)\(([-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\)", rest)
+                matches = re.findall(
+                    r"(\w+)\(([-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\)", rest
+                )
 
                 for var_name, var_value in matches:
                     var_value = float(var_value)  # Convert value to float
@@ -164,7 +196,9 @@ def make_combined_df(dict_monfiles):
                 # For non-residual monitors, rename all columns except "Iteration"
                 df_non_residual = df.copy()
                 new_column_names = {
-                    col: f"{col}-{monitor_name}" for col in df.columns if col != "Iteration"
+                    col: f"{col}-{monitor_name}"
+                    for col in df.columns
+                    if col != "Iteration"
                 }
                 df_non_residual.rename(columns=new_column_names, inplace=True)
 
@@ -173,15 +207,15 @@ def make_combined_df(dict_monfiles):
                     df_monfiles_total = df_non_residual
                 else:
                     df_monfiles_total = pd.merge(
-                        df_monfiles_total, df_non_residual, on="Iteration", how="outer")
+                        df_monfiles_total, df_non_residual, on="Iteration", how="outer"
+                    )
 
     return df_monfiles_total
 
 
 def get_df():
-    
     logging.basicConfig(level=logging.DEBUG)
-    
+
     try:
         if is_debug():
             base_dir = os.getcwd()
