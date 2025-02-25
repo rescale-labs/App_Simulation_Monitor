@@ -193,7 +193,6 @@ def get_df():
             dict_monfiles = process_aedt_and_monitor_data(working_dir)
 
         df_monfiles_total = make_combined_df(dict_monfiles)
-
     except Exception as e:
         logging.debug(e)
         return pd.DataFrame()
