@@ -52,8 +52,7 @@ if [ ! -f $FIRST_START_FILE ]; then
   touch $FIRST_START_FILE
 fi
 
-eval "$(/${MOUNT_POINT}/miniconda/bin/conda shell.bash hook)"
-conda activate RESCALE
+source $PROGRAM_PATH/python_venv/bin/activate
 
 cd $MOUNT_POINT
 
