@@ -6,8 +6,6 @@ MPI_ROLE=$2
 export HOME=/enc/$JOB_USER
 
 MOUNT_POINT="%MOUNT_POINT%"
-VERSION="%VERSION%"
-
 FIRST_START_FILE=/tmp/.%ANALYSIS_CODE%_%VERSION%
 
 # Make sure the jupyter4all infra is initialised. Timeout as it may happen when
@@ -52,10 +50,6 @@ if [ ! -f $FIRST_START_FILE ]; then
   touch $FIRST_START_FILE
 fi
 
-source $PROGRAM_PATH/python_venv/bin/activate
-
-cd $MOUNT_POINT
-
 # When the setup_command is run RESCALE_CLUSTER_ID is not set, even if this
 # script is run with JOB_USER - HOME will be set to /root, envvars set by
 # attached tiles like ANSYSCFX_VERSION are not there yet. However when Jupyter
@@ -67,6 +61,9 @@ source $HOME/.bash_profile
 CERT=$HOME/.certs/nb.pem
 CKEY=$HOME/.certs/nb.key
 
-echo "Simulation Monitor RescaleApp ready. Open the Jupyter Notebook link to access it."
+source $MOUNT_POINT/python_venv/bin/activate
 
+cd $MOUNT_POINT
 gunicorn --certfile $CERT --keyfile $CKEY -b 0.0.0.0:8888 app:server
+
+echo "Simulation Monitor RescaleApp ready. Open the Jupyter Notebook link to access it."
