@@ -1,0 +1,18 @@
+{
+    "name": "[build] SimMon 8.11.25 LNX",
+    "jobanalyses": [
+        {
+            "analysis": {
+                "code": "sxp-interactive-batch",
+                "version": "no_mpi"
+            },
+            "command": "cd dist; bash ./bits_build.sh; cd ..; rm -fr dist",
+            "hardware": {
+                "coreType": "emerald",
+                "coresPerSlot": 1,
+                "walltime": 1
+            },
+            "inputFiles": [{"id": ""}]
+        }
+    ]
+}

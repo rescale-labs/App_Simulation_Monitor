@@ -68,7 +68,7 @@ def find_layout():
 
         # Import the plugin you want to test when developing locally
 #        from plugins.starccm_plugin import get_layout, is_applicable
-        from plugins.icepak_plugin import get_layout, is_applicable
+        from plugins.fluent_plugin import get_layout, is_applicable
 
         if is_applicable():
             layout = get_layout()
@@ -109,4 +109,4 @@ api = Api(server)
 api.add_resource(RescaleAppDiscovery, f"{PREFIX}/.rescale-app")
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run(debug=True)

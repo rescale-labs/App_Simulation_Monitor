@@ -7,6 +7,7 @@ def is_debug():
     """
     Checks whether code is executed with debugger
     """
+    return True
     gettrace = getattr(sys, "gettrace", None)
 
     v = gettrace()

@@ -14,7 +14,7 @@ def create_plot(df, x_axis_value, y_axis_values, x_scale, y_scale):
     for y_col in y_axis_values:
         fig.add_trace(
             go.Scatter(
-                x=df[x_axis_value], y=df[y_col], mode="lines+markers", name=y_col
+                x=df[x_axis_value], y=df[y_col], mode="lines", name=y_col
             )
         )
 

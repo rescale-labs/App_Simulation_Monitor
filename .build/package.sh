@@ -6,7 +6,11 @@ ANALYSIS_CODE=$1
 VERSION=$2
 DIST_PATH=$3
 
-MOUNT_POINT="/program/${ANALYSIS_CODE}_${VERSION}"
+# IBT
+#MOUNT_POINT="/program/${ANALYSIS_CODE}_${VERSION}"
+
+# Software Publisher
+MOUNT_POINT="/software/${ANALYSIS_CODE}_${VERSION}"
 SRC_DIR=".."
 
 # Using templates makes it easier to publish new versions without touching multiple files.

@@ -7,66 +7,43 @@ import pandas as pd
 
 from utils import find_file, is_debug
 
-
-def get_column_ranges(value_row):
-    column_ranges = []
-
-    in_value = False
-    start_idx = 0
-    current_idx = 0
-
-    for c in value_row:
-        if not in_value and c == " ":
-            pass
-        elif not in_value and c != " ":
-            in_value = True
-        elif in_value and (c == " " or c == "\n"):
-            column_ranges.append((start_idx, current_idx))
-            start_idx = current_idx + 1
-            in_value = False
-        elif c == ":":
-            # we want to discard the last "0:01:34  499" or the "time/iter" column
-            break
-
-        current_idx += 1
-
-    return column_ranges
-
-
-def convert_to_list(line, column_ranges):
-    row = []
-    for s, e in column_ranges:
-        row.append(line[s : e + 1].strip())
-    return row
-
-
 def parse_file(process_output_file_path):
     FIRST_CHAR_IDX = 23
     out_csv = io.StringIO()
     csv_writer = csv.writer(out_csv)
 
     header_pattern = r"\s+iter\s+continuity\s+x-velocity\s+y-velocity\s+z-velocity.*"
-    values_pattern = f"\s+\d+\s+[\d|.|e|+|-]+\s+[\d|.|e|+|-]+\s+[\d|.|e|+|-]+\s+.*"
+    transient_header_pattern = r"\s+step\s+flow-time.*"
+    values_pattern = r"\s+\d+\s+[\d|.|e|+|-]+\s+.*"
 
     captured_header = None
-    column_ranges = None
+    transient = False
 
     with open(process_output_file_path, "r") as f:
         while l := f.readline():
             # strip timestamps
             line = l[FIRST_CHAR_IDX:]
-            if re.match(header_pattern, line) and not captured_header:
-                captured_header = line
+            if not transient and re.match(transient_header_pattern, line):
+                captured_header = line.split()
+                out_csv = io.StringIO()
+                csv_writer = csv.writer(out_csv)
+                csv_writer.writerow(captured_header)
+                transient = True
+            elif re.match(header_pattern, line) and not captured_header:
+                captured_header = line.split()
+                csv_writer.writerow(captured_header)
             elif re.match(values_pattern, line):
-                if not column_ranges:
-                    column_ranges = get_column_ranges(line)
-                    csv_writer.writerow(convert_to_list(captured_header, column_ranges))
-                csv_writer.writerow(convert_to_list(line, column_ranges))
+                val_row = line.split() if transient else line.split()[:-1]
+                if len(val_row) == len(captured_header):
+                    csv_writer.writerow(val_row)
             else:
                 pass
-
+    
     try:
-        return pd.read_csv(io.StringIO(out_csv.getvalue()))
+        df = pd.read_csv(io.StringIO(out_csv.getvalue()))
+        if transient:
+            return df.drop_duplicates(subset=["step"])
+        return df.drop_duplicates(subset=["iter"]).reset_index(drop=True)
     except pd.errors.EmptyDataError:
         return pd.DataFrame()
 
@@ -75,9 +52,16 @@ def get_df():
     if is_debug():
         file = find_file("**/fluent_process_output.dat", "..")
         # file = find_file("**/fluent_process_output_no_values.dat", "..")
+        file = find_file("**/fluent_process_output_transient.log","..")
     else:
         home_dir = os.path.expanduser("~")
         file = find_file("**/process_output.log", home_dir)
 
     df = parse_file(file)
     return df
+
+if __name__ == "__main__":
+    fname = r'C:\Users\ctusa\Downloads\process_output_sAvumg.log'
+    print(fname)
+    df = parse_file(fname)
+    print(df)

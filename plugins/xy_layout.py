@@ -73,7 +73,8 @@ def get_empty_axes_selector_children():
 
 
 def get_layout(get_df, analysis_name):
-    columns = get_columns(get_df())
+    df = get_df()
+    columns = get_columns(df)
     if columns:
         axes_selector = html.Div(
             get_axes_selector_children(columns),
@@ -179,7 +180,7 @@ def get_layout(get_df, analysis_name):
             return (
                 dcc.Graph(
                     figure=create_plot(
-                        get_df(), x_axis_value, y_axis_values, x_scale, y_scale
+                        df, x_axis_value, y_axis_values, x_scale, y_scale
                     )
                 ),
                 x_axis_value,
