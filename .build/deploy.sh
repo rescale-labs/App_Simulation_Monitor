@@ -4,7 +4,7 @@ source shared.sh
 
 DIST_PATH=$1
 SHARE_WITH_HPC=$2
-API_KEY=${RESCALE_API_KEY}
+API_KEY=${RESCALE_API_KEY_CTUSA}
 
 echo "Uploading inputs..."
 FILE_ID=$(
