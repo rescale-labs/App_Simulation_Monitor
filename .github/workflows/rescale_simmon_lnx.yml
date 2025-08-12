@@ -6,7 +6,7 @@ on:
       - 'v*'
 env:
   ANALYSIS_CODE: rescale_simmon_lnx
-  RESCALE_API_KEY: ${{ secrets.RESCALE_API_KEY_CTUSA }}
+  RESCALE_API_KEY_CTUSA: ${{ secrets.RESCALE_API_KEY_CTUSA }}
 jobs:
   build-publish-deploy:
     runs-on: ubuntu-latest
